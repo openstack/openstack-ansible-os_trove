@@ -1,8 +1,8 @@
 OpenStack-Ansible trove
 ###############################
 
-Ansible role that installs and configures OpenStack trove. trove is
-installed behind the Apache webserver listening on port 9200 by default.
+Ansible role that installs and configures OpenStack Trove. Trove is
+installed behind the Apache webserver listening on port 8779 by default.
 
 Required Variables
 ==================
@@ -13,7 +13,7 @@ details.
 .. code-block:: yaml
 
     # trove TCP listening port
-    trove_service_port: 9200
+    trove_service_port: 8779
 
 Example Playbook
 ================
