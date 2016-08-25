@@ -1,0 +1,129 @@
+---
+# Copyright 2016 Internet Solutions (Pty) Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# (c) 2016 Donovan Francesco <donovan.francesco@is.co.za>
+# (c) 2016 Paul Stevens <paul.stevens@is.co.za>
+trove_package_state: "latest"
+
+trove_system_group_name: trove
+trove_system_user_name: trove
+trove_system_user_comment: Trove System User
+trove_system_user_shell: /bin/false
+trove_system_user_home: "/var/lib/{{ trove_system_user_name }}"
+trove_log_directory: /var/log/trove
+trove_etc_directory: /etc/trove
+
+trove_api_program_name: trove-api
+trove_conductor_program_name: trove-conductor
+trove_taskmanager_program_name: trove-taskmanager
+trove_guestagent_program_name: trove-guestagent
+
+trove_service_name: trove
+trove_service_user_name: trove
+trove_service_type: dbaas
+trove_service_description: "OpenStack DBaaS (Trove)"
+trove_service_project_name: service
+trove_service_role_names:
+  - admin
+trove_service_region: RegionOne
+trove_service_port: 8779
+trove_service_publicuri_proto: http
+trove_service_publicurl: "{{ trove_service_publicuri_proto }}://{{ external_lb_vip_address }}:{{ trove_bind_port }}"
+trove_service_internaluri_proto: http
+trove_service_internalurl: "{{ trove_service_internaluri_proto }}://{{ internal_lb_vip_address }}:{{ trove_bind_port }}"
+trove_service_adminuri_proto: http
+trove_service_adminurl: "{{ trove_service_adminuri_proto }}://{{ internal_lb_vip_address }}:{{ trove_bind_port }}"
+
+trove_config_overrides: {}
+trove_api_paste_ini_overrides: {}
+trove_conductor_config_overrides: {}
+trove_taskmanager_config_overrides: {}
+
+# Name of the virtual env to deploy into
+trove_venv_tag: untagged
+trove_bin: "/openstack/venvs/trove-{{ trove_venv_tag }}/bin"
+
+trove_venv_download_url: http://127.0.0.1/venvs/untagged/ubuntu/trove.tgz
+
+trove_git_repo: "https://git.openstack.org/openstack/trove"
+trove_git_install_branch: master
+trove_requirements_git_repo: https://git.openstack.org/openstack/requirements
+trove_requirements_git_install_branch: master
+trove_developer_mode: false
+trove_developer_constraints:
+  - "git+{{ trove_git_repo }}@{{ trove_git_install_branch }}#egg=trove"
+
+#: Set this to false to disable API service through Apache + mod_wsgi
+trove_use_mod_wsgi: false
+
+## Apache setup
+trove_apache_log_level: info
+trove_apache_servertokens: "Prod"
+trove_apache_serversignature: "Off"
+trove_wsgi_threads: 1
+trove_wsgi_processes: "{{ ansible_processor_vcpus | default (1) * 2 }}"
+
+# set trove_ssl to true to enable SSL configuration on the trove containers
+trove_ssl: false
+trove_ssl_cert: /etc/ssl/certs/trove.pem
+trove_ssl_key: /etc/ssl/private/trove.key
+trove_ssl_ca_cert: /etc/ssl/certs/trove-ca.pem
+trove_ssl_protocol: "{{ ssl_protocol | default('ALL -SSLv2 -SSLv3') }}"
+trove_ssl_cipher_suite: "{{ ssl_cipher_suite | default('ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS') }}"
+
+# if using a self-signed certificate, set this to true to regenerate it
+trove_ssl_self_signed_regen: false
+trove_ssl_self_signed_subject: "/C=US/ST=Texas/L=San Antonio/O=IT/CN={{ internal_lb_vip_address }}/subjectAltName=IP.1={{ external_lb_vip_address }}"
+
+# Database vars
+trove_galera_database_name: trove
+trove_galera_user: trove
+trove_db_sync_options:
+
+# Rabbit vars
+trove_rpc_backend: rabbit
+trove_rabbitmq_userid: trove
+trove_rabbitmq_vhost: /trove
+trove_rabbitmq_servers: 127.0.0.1
+trove_rabbitmq_use_ssl: False
+trove_rabbitmq_port: 5672
+
+# Keystone AuthToken/Middleware
+trove_keystone_auth_plugin: password
+trove_service_project_domain_name: Default
+trove_service_user_domain_name: default
+trove_service_project_name: service
+
+#Glance images
+trove_glance_images: []
+
+trove_requires_pip_packages:
+  - httplib2
+  - python-glanceclient
+  - python-keystoneclient
+  - virtualenv
+  - virtualenv-tools
+
+trove_pip_packages:
+  - MySQL-python
+  - PyMySQL
+  - pexpect
+  - trove
+
+# This variable is used by the repo_build process to determine
+# which host group to check for members of before building the
+# pip packages required by this role. The value is picked up
+# by the py_pkgs lookup.
+trove_role_project_group: trove_all

@@ -1,0 +1,20 @@
+---
+galaxy_info:
+  author: Donovan Francesco <donovan.francesco@is.co.za>
+  description: Deploy Elasticsearch with OpenStack Ansible
+  company: OpenStack
+  license: Apache-2.0
+  min_ansible_version: 1.9
+  version: 0.1.0
+  platforms:
+  - name: Ubuntu
+    versions:
+    - trusty
+    - xenial
+  galaxy_tags:
+   - cloud
+   - openstack
+   - python
+   - elasticsearch
+
+dependencies: []
