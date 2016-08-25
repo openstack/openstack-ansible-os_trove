@@ -15,9 +15,6 @@
 #
 # (c) 2016 Donovan Francesco <donovan.francesco@is.co.za>
 # (c) 2016 Paul Stevens <paul.stevens@is.co.za>
-#
-# Originally obtained from https://github.com/elastic/ansible-trove
-#
 cache_timeout: 600
 
 trove_apt_packages:

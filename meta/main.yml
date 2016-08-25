@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   author: Donovan Francesco <donovan.francesco@is.co.za>
-  description: Deploy Elasticsearch with OpenStack Ansible
+  description: Deploy Trove with OpenStack Ansible
   company: OpenStack
   license: Apache-2.0
   min_ansible_version: 1.9
@@ -15,6 +15,6 @@ galaxy_info:
    - cloud
    - openstack
    - python
-   - elasticsearch
+   - trove
 
 dependencies: []

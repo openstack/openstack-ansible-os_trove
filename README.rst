@@ -1,4 +1,4 @@
-OpenStack-Ansible trove
+OpenStack-Ansible Trove (DBaaS)
 ###############################
 
 Ansible role that installs and configures OpenStack Trove. Trove is

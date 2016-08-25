@@ -62,7 +62,7 @@ category = 'Miscellaneous'
 copyright = '2014-2016, OpenStack-Ansible Contributors'
 description = 'OpenStack-Ansible deploys OpenStack environments using Ansible.'
 project = 'OpenStack-Ansible'
-role_name = 'os_elasticsearch'
+role_name = 'os_trove'
 target_name = 'openstack-ansible-' + role_name
 title = 'OpenStack-Ansible Documentation: ' + role_name + 'role'
 
