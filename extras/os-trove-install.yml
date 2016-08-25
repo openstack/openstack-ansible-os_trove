@@ -21,54 +21,43 @@
   max_fail_percentage: 20
   user: root
   pre_tasks:
-    - name: Use the lxc-openstack aa profile
-      lxc_container:
-        name: "{{ container_name }}"
-        container_config:
-          - "lxc.aa_profile=lxc-openstack"
-      delegate_to: "{{ physical_host }}"
-      when: not is_metal | bool
-      register: container_config
-      tags:
-        - lxc-aa-profile
-    - name: Wait for container ssh
-      wait_for:
-        port: "22"
-        delay: "{{ ssh_delay }}"
-        search_regex: "OpenSSH"
-        host: "{{ ansible_ssh_host }}"
-      delegate_to: "{{ physical_host }}"
-      when: >
-            (container_config is defined and container_config | changed) or
-            (container_extra_config is defined and container_config | changed)
-      register: ssh_wait_check
-      until: ssh_wait_check | success
-      retries: 3
-      tags:
-        - ssh-wait
-    - name: Create log dir
-      file:
-        path: "/openstack/log/{{ inventory_hostname }}-trove"
-        state: directory
-      when: is_metal | bool
-      tags:
-        - trove-logs
-        - trove-log-dirs
-    - name: Create log aggregation links
-      file:
-        src: "/openstack/log/{{ inventory_hostname }}-trove"
-        dest: "/var/log/trove"
-        state: "link"
-        force: "yes"
-      when: is_metal | bool
-      tags:
-        - trove-logs
+    - include: common-tasks/os-lxc-container-setup.yml
+    - include: common-tasks/os-log-dir-setup.yml
+      vars:
+        log_dirs:
+          - src: "/openstack/log/{{ inventory_hostname }}-trove"
+            dest: "/var/log/trove"
+    - include: common-tasks/rabbitmq-servers-sort.yml
+      vars:
+        sort_group_name: "trove_all"
+    - include: common-tasks/rabbitmq-vhost-user.yml
+      vars:
+        user: "{{ trove_rabbitmq_userid }}"
+        password: "{{ trove_rabbitmq_password }}"
+        vhost: "{{ trove_rabbitmq_vhost }}"
+      when:
+        - inventory_hostname == groups['trove_all'][0]
+        - groups['rabbitmq_all'] | length > 0
+    - include: common-tasks/mysql-db-user.yml
+      vars:
+        user_name: "{{ trove_galera_user }}"
+        password: "{{ trove_galera_password }}"
+        login_host: "{{ trove_galera_address }}"
+        db_name: "{{ trove_galera_database }}"
+      when: inventory_hostname == groups['trove_all'][0]
   roles:
     - role: "os_trove"
+      trove_venv_tag: "{{ openstack_release }}"
+      trove_venv_download_url: "{{ openstack_repo_url }}/venvs/{{ openstack_release }}/{{ ansible_distribution | lower }}/trove-{{ openstack_release }}.tgz"
+      pip_lock_to_internal_repo: "{{ (pip_links | length) >= 1 }}"
       tags:
         - "os-trove"
-    - role: "system_crontab_coordination"
+    - { role: "openstack_openrc", tags: [ "openstack-openrc" ] }
+    - role: "rsyslog_client"
+      rsyslog_client_log_rotate_file: trove_log_rotate
+      rsyslog_client_log_dir: "/var/log/trove"
+      rsyslog_client_config_name: "99-trove-rsyslog-client.conf"
       tags:
-        - "system-crontab-coordination"
+        - "trove-rsyslog-client"
   vars:
     is_metal: "{{ properties.is_metal|default(false) }}"
