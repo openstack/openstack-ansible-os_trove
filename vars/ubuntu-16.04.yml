@@ -29,4 +29,3 @@ trove_apt_packages:
   - mysql-client
   - libxslt1-dev
   - qemu-utils
-  - libmysqlclient-dev

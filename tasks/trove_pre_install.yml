@@ -23,8 +23,8 @@
   user:
     name: "{{ trove_system_user_name }}"
     group: "{{ trove_system_group_name }}"
-    comment: "{{ trove_system_comment }}"
-    shell: "{{ trove_system_shell }}"
+    comment: "{{ trove_system_user_comment }}"
+    shell: "{{ trove_system_user_shell }}"
     system: "yes"
     createhome: "yes"
     home: "{{ trove_system_user_home }}"

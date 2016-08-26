@@ -51,7 +51,7 @@
 
 - name: Install required pip packages
   pip:
-    name: "{{ trove_required_pip_packages | join(' ') }}"
+    name: "{{ trove_requires_pip_packages | join(' ') }}"
     state: latest
     extra_args: "{{ pip_install_options_fact }}"
   register: install_packages

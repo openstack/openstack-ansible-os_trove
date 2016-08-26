@@ -1,11 +1,12 @@
----
-# Copyright 2016 Internet Solutions (Pty) Ltd
+#!/bin/bash
+#
+# Copyright 2015, Rackspace US, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#    http://www.apache.org/licenses/LICENSE-2.0
+#     http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,19 +14,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# (c) 2016 Donovan Francesco <donovan.francesco@is.co.za>
-# (c) 2016 Paul Stevens <paul.stevens@is.co.za>
-cache_timeout: 600
 
-trove_apt_packages:
-  - apache2
-  - apache2-utils
-  - libapache2-mod-wsgi
-  - git
-  - build-essential
-  - python-dev
-  - python-software-properties
-  - python-pip
-  - mysql-client
-  - libxslt1-dev
-  - qemu-utils
+iptables -F
+iptables -X
+iptables -t nat -F
+iptables -t nat -X
+iptables -t mangle -F
+iptables -t mangle -X
+iptables -P INPUT ACCEPT
+iptables -P FORWARD ACCEPT
+iptables -P OUTPUT ACCEPT

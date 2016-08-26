@@ -15,17 +15,21 @@
 #
 # (c) 2016 Donovan Francesco <donovan.francesco@is.co.za>
 # (c) 2016 Paul Stevens <paul.stevens@is.co.za>
-cache_timeout: 600
 
-trove_apt_packages:
-  - apache2
-  - apache2-utils
-  - libapache2-mod-wsgi
-  - git
-  - build-essential
-  - python-dev
-  - python-software-properties
-  - python-pip
-  - mysql-client
-  - libxslt1-dev
-  - qemu-utils
+# Prepare the user ssh keys
+- include: test-prepare-keys.yml
+
+# Prepare the host
+- include: test-prepare-host.yml
+
+# Prepare the containers
+- include: test-prepare-containers.yml
+
+# Install RabbitMQ/MariaDB
+- include: test-install-infra.yml
+
+# Install keystone
+- include: test-install-keystone.yml
+
+# Install trove
+- include: test-install-trove.yml

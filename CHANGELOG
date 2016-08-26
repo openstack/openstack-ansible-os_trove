@@ -1,1 +1,8 @@
-# CHANGELOG
+CHANGES
+=======
+
+* Add scaffolding for OpenStack-CI tests
+* Adding trove_extra_service_names and creating database on galera
+* Updates
+* Update
+* Initial Commit

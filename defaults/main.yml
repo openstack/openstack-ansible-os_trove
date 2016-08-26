@@ -46,11 +46,6 @@ trove_service_internalurl: "{{ trove_service_internaluri_proto }}://{{ internal_
 trove_service_adminuri_proto: http
 trove_service_adminurl: "{{ trove_service_adminuri_proto }}://{{ internal_lb_vip_address }}:{{ trove_bind_port }}"
 
-trove_config_overrides: {}
-trove_api_paste_ini_overrides: {}
-trove_conductor_config_overrides: {}
-trove_taskmanager_config_overrides: {}
-
 # Name of the virtual env to deploy into
 trove_venv_tag: untagged
 trove_bin: "/openstack/venvs/trove-{{ trove_venv_tag }}/bin"
@@ -133,3 +128,9 @@ trove_pip_packages:
 # pip packages required by this role. The value is picked up
 # by the py_pkgs lookup.
 trove_role_project_group: trove_all
+
+## Tunable overrides
+trove_config_overrides: {}
+trove_api_paste_ini_overrides: {}
+trove_conductor_config_overrides: {}
+trove_taskmanager_config_overrides: {}
