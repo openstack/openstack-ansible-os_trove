@@ -17,6 +17,7 @@
 # (c) 2016 Paul Stevens <paul.stevens@is.co.za>
 trove_package_state: "latest"
 
+debug: false
 trove_system_group_name: trove
 trove_system_user_name: trove
 trove_system_user_comment: Trove System User
@@ -28,7 +29,6 @@ trove_etc_directory: /etc/trove
 trove_api_program_name: trove-api
 trove_conductor_program_name: trove-conductor
 trove_taskmanager_program_name: trove-taskmanager
-trove_guestagent_program_name: trove-guestagent
 
 trove_service_name: trove
 trove_service_user_name: trove
@@ -38,13 +38,25 @@ trove_service_project_name: service
 trove_service_role_names:
   - admin
 trove_service_region: RegionOne
+trove_service_host: "0.0.0.0"
 trove_service_port: 8779
 trove_service_publicuri_proto: http
-trove_service_publicurl: "{{ trove_service_publicuri_proto }}://{{ external_lb_vip_address }}:{{ trove_bind_port }}"
+trove_service_publicurl: "{{ trove_service_publicuri_proto }}://{{ external_lb_vip_address }}:{{ trove_service_port }}/v1.0"
 trove_service_internaluri_proto: http
-trove_service_internalurl: "{{ trove_service_internaluri_proto }}://{{ internal_lb_vip_address }}:{{ trove_bind_port }}"
+trove_service_internalurl: "{{ trove_service_internaluri_proto }}://{{ internal_lb_vip_address }}:{{ trove_service_port }}/v1.0"
 trove_service_adminuri_proto: http
-trove_service_adminurl: "{{ trove_service_adminuri_proto }}://{{ internal_lb_vip_address }}:{{ trove_bind_port }}"
+trove_service_adminurl: "{{ trove_service_adminuri_proto }}://{{ internal_lb_vip_address }}:{{ trove_service_port }}/v1.0"
+trove_auth_url: "{{ keystone_service_internalurl }}"
+trove_nova_compute_url: "{{ trove_service_publicuri_proto }}://{{ external_lb_vip_address }}:{{ nova_service_port }}/v2.1"
+trove_cinder_url: "{{ trove_service_publicuri_proto }}://{{ external_lb_vip_address }}:{{ cinder_service_port }}/v1"
+trove_swift_url: "{{ trove_service_publicuri_proto }}://{{ external_lb_vip_address }}:{{ swift_proxy_port }}/v1/AUTH_"
+trove_neutron_url: "{{ trove_service_publicuri_proto }}://{{ external_lb_vip_address }}:{{ neutron_service_port }}/"
+trove_profiler_enabled: false
+
+# If ``trove_api_workers`` is unset the system will use half the number of
+# available VCPUS to compute the number of api workers to use.
+# trove_api_workers: 16
+# trove_api_workers: 16
 
 # Name of the virtual env to deploy into
 trove_venv_tag: untagged
@@ -83,28 +95,30 @@ trove_ssl_self_signed_regen: false
 trove_ssl_self_signed_subject: "/C=US/ST=Texas/L=San Antonio/O=IT/CN={{ internal_lb_vip_address }}/subjectAltName=IP.1={{ external_lb_vip_address }}"
 
 # Database vars
+
 trove_galera_database_name: trove
 trove_galera_user: trove
+trove_galera_address: "{{ internal_lb_vip_address }}"
 trove_db_sync_options:
+trove_galera_connection_string: "mysql+pymysql://{{ trove_galera_user}}:{{ trove_galera_password }}@{{ trove_galera_address }}/{{ trove_galera_database_name }}?charset=utf8"
 
 # Rabbit vars
 trove_rpc_backend: rabbit
+trove_control_exchange: trove
+trove_rabbit_notification_topic: notification
 trove_rabbitmq_userid: trove
 trove_rabbitmq_vhost: /trove
-trove_rabbitmq_servers: 127.0.0.1
 trove_rabbitmq_use_ssl: False
 trove_rabbitmq_port: 5672
+trove_rabbitmq_servers: "{{ rabbitmq_servers }}"
 
 # Keystone AuthToken/Middleware
 trove_keystone_auth_plugin: password
 trove_service_project_domain_name: Default
 trove_service_user_domain_name: default
-trove_service_project_name: service
 
-#: List of extra programs/services owned by trove
-trove_extra_service_names:
-  - "{{ trove_conductor_program_name }}"
-  - "{{ trove_taskmanager_program_name }}"
+trove_conductor_service_name: "{{ trove_conductor_program_name }}"
+trove_taskmanager_service_name: "{{ trove_taskmanager_program_name }}"
 
 #Glance images
 trove_glance_images: []
@@ -121,6 +135,7 @@ trove_pip_packages:
   - MySQL-python
   - PyMySQL
   - pexpect
+  - pycrypto
   - trove
 
 # This variable is used by the repo_build process to determine

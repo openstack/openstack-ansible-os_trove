@@ -59,5 +59,8 @@
       rsyslog_client_config_name: "99-trove-rsyslog-client.conf"
       tags:
         - "trove-rsyslog-client"
+    - role: "system_crontab_coordination"
+      tags:
+        - "system-crontab-coordination"
   vars:
     is_metal: "{{ properties.is_metal|default(false) }}"

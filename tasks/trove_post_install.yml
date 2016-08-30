@@ -1,19 +1,21 @@
 ---
-# Copyright 2015, Rackspace US, Inc.
+# Copyright 2016 Internet Solutions (Pty) Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+#    http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-- name: Drop trove Config(s)
+#
+# (c) 2016 Donovan Francesco <donovan.francesco@is.co.za>
+# (c) 2016 Paul Stevens <paul.stevens@is.co.za>
+- name: Drop trove api Config(s)
   config_template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
@@ -31,18 +33,54 @@
       dest: "/etc/trove/trove.conf"
       config_overrides: "{{ trove_config_overrides }}"
       config_type: "ini"
+  notify:
+    - Restart Apache
+    - Restart trove API services
+  when: inventory_hostname in groups['trove_api']
+
+- name: Drop trove-conductor Config(s)
+  config_template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ trove_system_user_name }}"
+    group: "{{ trove_system_group_name }}"
+    mode: "0644"
+    config_overrides: "{{ item.config_overrides }}"
+    config_type: "{{ item.config_type }}"
+  with_items:
+    - src: "trove-api-paste.ini.j2"
+      dest: "/etc/trove/api-paste.ini"
+      config_overrides: "{{ trove_api_paste_ini_overrides }}"
+      config_type: "ini"
     - src: "trove-conductor.conf.j2"
       dest: "/etc/trove/trove-conductor.conf"
       config_overrides: "{{ trove_conductor_config_overrides }}"
+      config_type: "ini"
+  notify:
+    - Restart trove conductor service
+  when: inventory_hostname in groups['trove_conductor']
+
+- name: Drop trove-taskmanager Config(s)
+  config_template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ trove_system_user_name }}"
+    group: "{{ trove_system_group_name }}"
+    mode: "0644"
+    config_overrides: "{{ item.config_overrides }}"
+    config_type: "{{ item.config_type }}"
+  with_items:
+    - src: "trove-api-paste.ini.j2"
+      dest: "/etc/trove/api-paste.ini"
+      config_overrides: "{{ trove_api_paste_ini_overrides }}"
       config_type: "ini"
     - src: "trove-taskmanager.conf.j2"
       dest: "/etc/trove/trove-taskmanager.conf"
       config_overrides: "{{ trove_taskmanager_config_overrides }}"
       config_type: "ini"
   notify:
-    - Restart Apache
-    - Restart trove API services
-    - Restart trove extra services
+    - Restart trove taskmanager service
+  when: inventory_hostname in groups['trove_taskmanager']
 
 - name: Drop trove WSGI Configs
   template:
@@ -51,6 +89,8 @@
     owner: "{{ trove_system_user_name }}"
     group: "{{ trove_system_group_name }}"
     mode: "0755"
-  when: trove_use_mod_wsgi | bool
+  when:
+    - trove_use_mod_wsgi | bool
+    - inventory_hostname in groups['trove_api']
   notify:
     - Restart Apache

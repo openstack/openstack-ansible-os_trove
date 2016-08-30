@@ -72,6 +72,10 @@ trove_venv_tag: "testing"
 openrc_os_auth_url: "http://127.0.0.1:5000/v3"
 openrc_os_domain_name: "Default"
 openrc_os_password: "{{ keystone_auth_admin_password }}"
+neutron_service_port: 9696
+swift_proxy_port: 8080
+cinder_service_port: 8776
+nova_service_port: 8774
 
 rabbitmq_port: 5672
 rabbitmq_servers: 10.100.102.101
