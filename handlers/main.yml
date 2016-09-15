@@ -20,6 +20,7 @@
     name: "{{ trove_api_program_name }}"
     state: "restarted"
     pattern: "{{ trove_api_program_name }}"
+  failed_when: false
   when: not trove_use_mod_wsgi | bool
 
 - name: Restart trove conductor service
@@ -27,12 +28,14 @@
     name: "{{ trove_conductor_service_name }}"
     state: "restarted"
     pattern: "{{ trove_conductor_service_name }}"
+  failed_when: false
 
 - name: Restart trove taskmanager service
   service:
     name: "{{ trove_taskmanager_service_name }}"
     state: "restarted"
     pattern: "{{ trove_taskmanager_service_name }}"
+  failed_when: false
 
 - name: Restart Apache
   service:

@@ -8,6 +8,8 @@ bind_port = {{ trove_service_port }}
 trove_api_workers={{ trove_api_workers | default(api_threads) }}
 rpc_backend={{ trove_rpc_backend }}
 transport_url = rabbit://{% for host in trove_rabbitmq_servers.split(',') %}{{ trove_rabbitmq_userid }}:{{ trove_rabbitmq_password }}@{{ host }}:{{ trove_rabbitmq_port }}{% if not loop.last %},{% else %}/{{ trove_rabbitmq_vhost }}{% endif %}{% endfor %}
+
+{# There must be a blank line above or the following line will be appended to the previous. #}
 control_exchange = {{ trove_control_exchange }}
 db_api_implementation = "trove.db.sqlalchemy.api"
 trove_auth_url = {{ trove_auth_url }}
@@ -46,6 +48,12 @@ dns_instance_entry_factory = trove.dns.designate.driver.DesignateInstanceEntryFa
 dns_endpoint_url = http://127.0.0.1/v1/
 dns_service_type = dns
 
+# Nova
+nova_compute_url = {{ trove_nova_compute_url }}
+nova_proxy_admin_user = {{ trove_service_user_name }}
+nova_proxy_admin_pass = {{ trove_service_password }}
+nova_proxy_admin_tenant_name = {{ trove_service_project_name }}
+
 # Neutron
 network_driver = trove.network.nova.NovaNetwork
 default_neutron_networks =
@@ -55,6 +63,7 @@ taskmanager_queue = taskmanager
 
 # Auth
 admin_roles = admin
+auth_strategy = keystone
 
 # Guest related conf
 agent_heartbeat_time = 10
@@ -66,6 +75,26 @@ reboot_time_out = 60
 
 # Trove api-paste file name
 api_paste_config = api-paste.ini
+
+[keystone_authtoken]
+insecure = {{ keystone_service_internaluri_insecure | bool }}
+auth_plugin = {{ trove_keystone_auth_plugin }}
+auth_url = {{ keystone_service_adminuri }}
+auth_uri = {{ keystone_service_internaluri }}
+project_domain_id = {{ trove_service_project_domain_id }}
+user_domain_id = {{ trove_service_user_domain_id }}
+project_name = {{ trove_service_project_name }}
+username = {{ trove_service_user_name }}
+password = {{ trove_service_password }}
+region_name = {{ keystone_service_region }}
+
+memcached_servers = {{ memcached_servers }}
+token_cache_time = 300
+revocation_cache_time = 60
+
+# if your memcached server is shared, use these settings to avoid cache poisoning
+memcache_security_strategy = ENCRYPT
+memcache_secret_key = {{ memcached_encryption_key }}
 
 [database]
 connection = "{{ trove_galera_connection_string }}"

@@ -32,7 +32,7 @@ trove_taskmanager_program_name: trove-taskmanager
 
 trove_service_name: trove
 trove_service_user_name: trove
-trove_service_type: dbaas
+trove_service_type: database
 trove_service_description: "OpenStack DBaaS (Trove)"
 trove_service_project_name: service
 trove_service_role_names:
@@ -41,13 +41,13 @@ trove_service_region: RegionOne
 trove_service_host: "0.0.0.0"
 trove_service_port: 8779
 trove_service_publicuri_proto: http
-trove_service_publicurl: "{{ trove_service_publicuri_proto }}://{{ external_lb_vip_address }}:{{ trove_service_port }}/v1.0"
+trove_service_publicurl: "{{ trove_service_publicuri_proto }}://{{ external_lb_vip_address }}:{{ trove_service_port }}/v1.0/%(tenant_id)s"
 trove_service_internaluri_proto: http
-trove_service_internalurl: "{{ trove_service_internaluri_proto }}://{{ internal_lb_vip_address }}:{{ trove_service_port }}/v1.0"
+trove_service_internalurl: "{{ trove_service_internaluri_proto }}://{{ internal_lb_vip_address }}:{{ trove_service_port }}/v1.0/%(tenant_id)s"
 trove_service_adminuri_proto: http
-trove_service_adminurl: "{{ trove_service_adminuri_proto }}://{{ internal_lb_vip_address }}:{{ trove_service_port }}/v1.0"
+trove_service_adminurl: "{{ trove_service_adminuri_proto }}://{{ internal_lb_vip_address }}:{{ trove_service_port }}/v1.0/%(tenant_id)s"
 trove_auth_url: "{{ keystone_service_internalurl }}"
-trove_nova_compute_url: "{{ trove_service_publicuri_proto }}://{{ external_lb_vip_address }}:{{ nova_service_port }}/v2.1"
+trove_nova_compute_url: "{{ trove_service_internaluri_proto }}://{{ internal_lb_vip_address }}:{{ nova_service_port }}/v2.1"
 trove_cinder_url: "{{ trove_service_publicuri_proto }}://{{ external_lb_vip_address }}:{{ cinder_service_port }}/v1"
 trove_swift_url: "{{ trove_service_publicuri_proto }}://{{ external_lb_vip_address }}:{{ swift_proxy_port }}/v1/AUTH_"
 trove_neutron_url: "{{ trove_service_publicuri_proto }}://{{ external_lb_vip_address }}:{{ neutron_service_port }}/"
@@ -127,6 +127,7 @@ trove_requires_pip_packages:
   - httplib2
   - python-glanceclient
   - python-keystoneclient
+  - python-memcached
   - python-troveclient
   - virtualenv
   - virtualenv-tools
