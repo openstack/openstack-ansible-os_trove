@@ -1,7 +1,7 @@
 [all]
-localhost ansible_connection=local ansible_become=True neutron_local_ip=10.100.101.1
-infra1 ansible_host=10.100.102.101 ansible_become=True ansible_user=root tunnel_address=10.100.101.101
-openstack1 ansible_host=10.100.102.102 ansible_become=True ansible_user=root tunnel_address=10.100.101.102 neutron_local_ip=10.100.101.102
+localhost ansible_become=True
+infra1 ansible_host=10.100.100.2 ansible_become=True ansible_user=root
+openstack1 ansible_host=10.100.100.3 ansible_become=True ansible_user=root
 
 [all_containers]
 infra1
@@ -13,9 +13,13 @@ infra1
 [galera_all]
 infra1
 
+[memcached_all]
+infra1
+
 [service_all:children]
 rabbitmq_all
 galera_all
+memcached_all
 
 [keystone_all]
 openstack1

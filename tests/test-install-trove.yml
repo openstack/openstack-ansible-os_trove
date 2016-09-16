@@ -37,7 +37,7 @@
       rabbitmq_vhost:
         name: "{{ trove_rabbitmq_vhost }}"
         state: "present"
-      delegate_to: "10.100.102.101"
+      delegate_to: "{{ hostvars[groups['rabbitmq_all'][0]]['ansible_host'] }}"
       when: inventory_hostname == groups['trove_all'][0]
     - name: Ensure rabbitmq user
       rabbitmq_user:
@@ -48,7 +48,7 @@
         read_priv: ".*"
         write_priv: ".*"
         state: "present"
-      delegate_to: "10.100.102.101"
+      delegate_to: "{{ hostvars[groups['rabbitmq_all'][0]]['ansible_host'] }}"
       when: inventory_hostname == groups['trove_all'][0]
     - name: Create DB for service
       mysql_db:
@@ -57,7 +57,7 @@
         login_host: "{{ trove_galera_address }}"
         name: "{{ trove_galera_database }}"
         state: "present"
-      delegate_to: "10.100.102.101"
+      delegate_to: "{{ hostvars[groups['galera_all'][0]]['ansible_host'] }}"
       when: inventory_hostname == groups['trove_all'][0]
     - name: Grant access to the DB for the service
       mysql_user:
@@ -72,10 +72,11 @@
       with_items:
         - "localhost"
         - "%"
-      delegate_to: "10.100.102.101"
+      delegate_to: "{{ hostvars[groups['galera_all'][0]]['ansible_host'] }}"
       when: inventory_hostname == groups['trove_all'][0]
 
   roles:
     - role: "{{ rolename | basename }}"
   vars_files:
+    - playbooks/test-vars.yml
     - test-vars.yml

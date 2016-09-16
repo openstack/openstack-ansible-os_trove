@@ -16,20 +16,14 @@
 # (c) 2016 Donovan Francesco <donovan.francesco@is.co.za>
 # (c) 2016 Paul Stevens <paul.stevens@is.co.za>
 
-# Prepare the user ssh keys
-- include: test-prepare-keys.yml
-
-# Prepare the host
-- include: test-prepare-host.yml
-
-# Prepare the containers
-- include: test-prepare-containers.yml
+# Setup the host
+- include: playbooks/test-setup-host.yml
 
 # Install RabbitMQ/MariaDB
-- include: test-install-infra.yml
+- include: playbooks/test-install-infra.yml
 
 # Install keystone
-- include: test-install-keystone.yml
+- include: playbooks/test-install-keystone.yml
 
 # Install trove
 - include: test-install-trove.yml

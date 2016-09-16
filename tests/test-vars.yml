@@ -16,40 +16,8 @@
 # (c) 2016 Donovan Francesco <donovan.francesco@is.co.za>
 # (c) 2016 Paul Stevens <paul.stevens@is.co.za>
 
-debug: true
-external_lb_vip_address: 10.100.102.102
-galera_client_drop_config_file: false
-galera_root_user: root
-galera_root_password: secrete
-internal_lb_vip_address: 10.100.102.102
-keystone_admin_tenant_name: admin
-keystone_admin_user_name: admin
-keystone_auth_admin_password: SuperSecretePassword
-keystone_container_mysql_password: "SuperSecrete"
-keystone_developer_mode: true
-keystone_galera_address: 10.100.102.101
-keystone_galera_database: keystone
-keystone_git_install_branch: master
-keystone_rabbitmq_password: "secrete"
-keystone_rabbitmq_port: "{{ rabbitmq_port }}"
-keystone_rabbitmq_servers: "{{ rabbitmq_servers }}"
-keystone_rabbitmq_use_ssl: "{{ rabbitmq_use_ssl }}"
-keystone_rabbitmq_userid: keystone
-keystone_rabbitmq_vhost: /keystone
-keystone_requirements_git_install_branch: master
-keystone_service_adminuri: "http://{{ internal_lb_vip_address }}:35357"
-keystone_service_adminuri_insecure: false
-keystone_service_adminurl: "{{ keystone_service_adminuri }}/v3"
-keystone_service_internaluri: "http://{{ internal_lb_vip_address }}:5000"
-keystone_service_internaluri_insecure: false
-keystone_service_internalurl: "{{ keystone_service_internaluri }}/v3"
-keystone_service_password: "secrete"
-keystone_service_region: RegionOne
-keystone_venv_tag: "testing"
-memcached_encryption_key: "secrete"
-memcached_servers: 127.0.0.1
 trove_developer_mode: True
-trove_galera_address: 10.100.102.101
+trove_galera_address: "{{ hostvars[groups['galera_all'][0]]['ansible_host'] }}"
 trove_galera_database: trove
 trove_galera_user: trove
 trove_galera_password: "secrete"
@@ -60,7 +28,6 @@ trove_rabbitmq_password: "secrete"
 trove_rabbitmq_userid: trove
 trove_rabbitmq_vhost: /trove
 trove_requirements_git_install_branch: master
-trove_service_adminurl: "http://{{ internal_lb_vip_address }}:8779"
 trove_service_password: "secrete"
 trove_service_project_domain_id: default
 trove_service_project_name: service
@@ -69,14 +36,9 @@ trove_service_user_domain_id: default
 trove_service_user_name: trove
 trove_bin: "/openstack/venvs/trove-{{ trove_venv_tag }}/bin"
 trove_venv_tag: "testing"
-openrc_os_auth_url: "http://127.0.0.1:5000/v3"
-openrc_os_domain_name: "Default"
-openrc_os_password: "{{ keystone_auth_admin_password }}"
+
 neutron_service_port: 9696
 swift_proxy_port: 8080
 cinder_service_port: 8776
 nova_service_port: 8774
 
-rabbitmq_port: 5672
-rabbitmq_servers: 10.100.102.101
-rabbitmq_use_ssl: False
