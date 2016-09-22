@@ -56,16 +56,19 @@
     - trove-install
 
 - include: trove_service_setup.yml
+  static: no
   when: inventory_hostname == groups['trove_api'][0]
   tags:
     - trove-install
 
 - include: trove_db_setup.yml
+  static: no
   when: inventory_hostname == groups['trove_conductor'][0]
   tags:
     - trove-install
 
 - include: trove_apache.yml
+  static: no
   when: trove_use_mod_wsgi | bool
   tags:
     - trove-install

@@ -15,10 +15,13 @@
 #
 # (c) 2016 Donovan Francesco <donovan.francesco@is.co.za>
 # (c) 2016 Paul Stevens <paul.stevens@is.co.za>
+
 - include: trove_init_upstart.yml
+  static: no
   when: pid1_name == "init"
 
 - include: trove_init_systemd.yml
+  static: no
   when: pid1_name == "systemd"
 
 - name: Load service
