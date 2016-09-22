@@ -22,6 +22,10 @@
   src: https://git.openstack.org/openstack/openstack-ansible-lxc_container_create
   scm: git
   version: master
+- name: memcached_server
+  src: https://git.openstack.org/openstack/openstack-ansible-memcached_server
+  scm: git
+  version: master
 - name: galera_client
   src: https://git.openstack.org/openstack/openstack-ansible-galera_client
   scm: git
@@ -34,11 +38,15 @@
   src: https://git.openstack.org/openstack/openstack-ansible-rabbitmq_server
   scm: git
   version: master
+- name: openstack_openrc
+  src: https://git.openstack.org/openstack/openstack-ansible-openstack_openrc
+  scm: git
+  version: master
 - name: os_keystone
   src: https://git.openstack.org/openstack/openstack-ansible-os_keystone
   scm: git
   version: master
-- name: openstack_openrc
-  src: https://git.openstack.org/openstack/openstack-ansible-openstack_openrc
+- name: openstack_hosts
+  src: https://github.com/openstack/openstack-ansible-openstack_hosts
   scm: git
   version: master

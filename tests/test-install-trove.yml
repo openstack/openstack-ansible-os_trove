@@ -76,7 +76,7 @@
       when: inventory_hostname == groups['trove_all'][0]
 
   roles:
-    - role: "{{ rolename | basename }}"
+    - role: "os_trove"
   vars_files:
     - playbooks/test-vars.yml
     - test-vars.yml
