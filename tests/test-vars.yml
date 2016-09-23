@@ -29,6 +29,8 @@ trove_rabbitmq_userid: trove
 trove_rabbitmq_vhost: /trove
 trove_requirements_git_install_branch: master
 trove_service_password: "secrete"
+trove_regular_user_password: "secrete"
+trove_admin_user_password: "secrete"
 trove_service_project_domain_id: default
 trove_service_project_name: service
 trove_service_region: RegionOne

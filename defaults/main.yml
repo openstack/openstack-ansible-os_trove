@@ -30,12 +30,15 @@ trove_api_program_name: trove-api
 trove_conductor_program_name: trove-conductor
 trove_taskmanager_program_name: trove-taskmanager
 
+trove_regular_user_name: regular_trove_user
+trove_admin_user_name: admin_trove_user
+
 trove_service_name: trove
-trove_service_user_name: trove
+trove_service_tenant_name: trove_for_trove_usage
 trove_service_type: database
 trove_service_description: "OpenStack DBaaS (Trove)"
 trove_service_project_name: service
-trove_service_role_names:
+trove_service_admin_role_names:
   - admin
 trove_service_region: RegionOne
 trove_service_host: "0.0.0.0"
