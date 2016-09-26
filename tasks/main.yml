@@ -15,6 +15,7 @@
 #
 # (c) 2016 Donovan Francesco <donovan.francesco@is.co.za>
 # (c) 2016 Paul Stevens <paul.stevens@is.co.za>
+
 - name: Gather variables for each operating system
   include_vars: "{{ item }}"
   with_first_found:
@@ -56,13 +57,11 @@
     - trove-install
 
 - include: trove_service_setup.yml
-  static: no
   when: inventory_hostname == groups['trove_api'][0]
   tags:
     - trove-install
 
 - include: trove_db_setup.yml
-  static: no
   when: inventory_hostname == groups['trove_conductor'][0]
   tags:
     - trove-install
