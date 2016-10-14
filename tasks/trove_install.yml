@@ -88,7 +88,7 @@
     url: "{{ trove_venv_download_url }}"
     dest: "/var/cache/{{ trove_venv_download_url | basename }}"
     force: yes
-  ignore_errors: true
+  failed_when: false
   register: get_venv
   when:
     - not trove_developer_mode | bool
