@@ -55,7 +55,7 @@
         login_user: "{{ galera_root_user }}"
         login_password: "{{ galera_root_password }}"
         login_host: "{{ trove_galera_address }}"
-        name: "{{ trove_galera_database }}"
+        name: "{{ trove_galera_database_name }}"
         state: "present"
       delegate_to: "{{ hostvars[groups['galera_all'][0]]['ansible_host'] }}"
       when: inventory_hostname == groups['trove_all'][0]
@@ -64,11 +64,11 @@
         login_user: "{{ galera_root_user }}"
         login_password: "{{ galera_root_password }}"
         login_host: "{{ trove_galera_address }}"
-        name: "{{ trove_galera_database }}"
+        name: "{{ trove_galera_database_name }}"
         password: "{{ trove_galera_password }}"
         host: "{{ item }}"
         state: "present"
-        priv: "{{ trove_galera_database }}.*:ALL"
+        priv: "{{ trove_galera_database_name }}.*:ALL"
       with_items:
         - "localhost"
         - "%"
