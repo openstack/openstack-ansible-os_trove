@@ -15,7 +15,9 @@
 #
 # (c) 2016 Donovan Francesco <donovan.francesco@is.co.za>
 # (c) 2016 Paul Stevens <paul.stevens@is.co.za>
+
 trove_package_state: "latest"
+trove_pip_package_state: "latest"
 
 debug: false
 trove_system_group_name: trove
