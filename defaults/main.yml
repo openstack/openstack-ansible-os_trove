@@ -72,8 +72,6 @@ trove_venv_download_url: http://127.0.0.1/venvs/untagged/ubuntu/trove.tgz
 
 trove_git_repo: "https://git.openstack.org/openstack/trove"
 trove_git_install_branch: master
-trove_requirements_git_repo: https://git.openstack.org/openstack/requirements
-trove_requirements_git_install_branch: master
 trove_developer_mode: false
 trove_developer_constraints:
   - "git+{{ trove_git_repo }}@{{ trove_git_install_branch }}#egg=trove"
