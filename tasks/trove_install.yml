@@ -32,7 +32,7 @@
 
 - name: Install required pip packages
   pip:
-    name: "{{ trove_requires_pip_packages | join(' ') }}"
+    name: "{{ trove_requires_pip_packages }}"
     state: "{{ trove_pip_package_state }}"
     extra_args: >-
       {{ (pip_install_upper_constraints is defined) | ternary('--constraint ' + pip_install_upper_constraints | default(''),'') }}
@@ -78,7 +78,7 @@
 
 - name: Install pip packages
   pip:
-    name: "{{ trove_pip_packages | join(' ') }}"
+    name: "{{ trove_pip_packages }}"
     state: "{{ trove_pip_package_state }}"
     virtualenv: "{{ trove_bin | dirname }}"
     virtualenv_site_packages: "no"
