@@ -99,7 +99,7 @@
 
 - name: Update virtualenv path
   command: >
-    virtualenv-tools --update-path=auto {{ trove_bin | dirname }}
+    virtualenv-tools --update-path=auto --reinitialize {{ trove_bin | dirname }}
   when:
     - not trove_developer_mode | bool
     - trove_get_venv | changed or trove_venv_dir | changed
