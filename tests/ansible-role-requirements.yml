@@ -46,3 +46,7 @@
   src: https://git.openstack.org/openstack/openstack-ansible-os_keystone
   scm: git
   version: master
+- name: os_tempest
+  src: https://git.openstack.org/openstack/openstack-ansible-os_tempest
+  scm: git
+  version: master

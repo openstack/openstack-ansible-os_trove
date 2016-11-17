@@ -21,62 +21,14 @@
   user: root
   gather_facts: true
   pre_tasks:
-    # NOTE: These are typically installed in the repo server where we build the
-    #       trove wheel
-    - name: Install packages required to build trove python package
-      apt:
-        name: "{{ item }}"
-      with_items:
-        - libxml2-dev
-        - libxslt-dev
-        - libffi-dev
-        - pkg-config
-        - libvirt-dev
-      when: inventory_hostname in groups['trove_all']
-    - name: Ensure rabbitmq vhost
-      rabbitmq_vhost:
-        name: "{{ trove_rabbitmq_vhost }}"
-        state: "present"
-      delegate_to: "{{ hostvars[groups['rabbitmq_all'][0]]['ansible_host'] }}"
-      when: inventory_hostname == groups['trove_all'][0]
-    - name: Ensure rabbitmq user
-      rabbitmq_user:
-        user: "{{ trove_rabbitmq_userid }}"
-        password: "{{ trove_rabbitmq_password }}"
-        vhost: "{{ trove_rabbitmq_vhost }}"
-        configure_priv: ".*"
-        read_priv: ".*"
-        write_priv: ".*"
-        state: "present"
-      delegate_to: "{{ hostvars[groups['rabbitmq_all'][0]]['ansible_host'] }}"
-      when: inventory_hostname == groups['trove_all'][0]
-    - name: Create DB for service
-      mysql_db:
-        login_user: "{{ galera_root_user }}"
-        login_password: "{{ galera_root_password }}"
-        login_host: "{{ trove_galera_address }}"
-        name: "{{ trove_galera_database_name }}"
-        state: "present"
-      delegate_to: "{{ hostvars[groups['galera_all'][0]]['ansible_host'] }}"
-      when: inventory_hostname == groups['trove_all'][0]
-    - name: Grant access to the DB for the service
-      mysql_user:
-        login_user: "{{ galera_root_user }}"
-        login_password: "{{ galera_root_password }}"
-        login_host: "{{ trove_galera_address }}"
-        name: "{{ trove_galera_database_name }}"
-        password: "{{ trove_galera_password }}"
-        host: "{{ item }}"
-        state: "present"
-        priv: "{{ trove_galera_database_name }}.*:ALL"
-      with_items:
-        - "localhost"
-        - "%"
-      delegate_to: "{{ hostvars[groups['galera_all'][0]]['ansible_host'] }}"
-      when: inventory_hostname == groups['trove_all'][0]
-
+    - include: common/create-grant-db.yml
+      db_name: "{{ trove_galera_database_name }}"
+      db_password: "{{ trove_galera_password }}"
+    - include: common/ensure-rabbitmq.yml
+      vhost_name: "{{ trove_rabbitmq_vhost }}"
+      user_name: "{{ trove_rabbitmq_userid }}"
+      user_password: "{{ trove_rabbitmq_password }}"
   roles:
     - role: "os_trove"
   vars_files:
     - common/test-vars.yml
-    - test-vars.yml

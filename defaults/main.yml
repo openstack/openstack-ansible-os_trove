@@ -72,6 +72,7 @@ trove_venv_download_url: http://127.0.0.1/venvs/untagged/ubuntu/trove.tgz
 
 trove_git_repo: "https://git.openstack.org/openstack/trove"
 trove_git_install_branch: master
+
 trove_developer_mode: false
 trove_developer_constraints:
   - "git+{{ trove_git_repo }}@{{ trove_git_install_branch }}#egg=trove"
@@ -133,8 +134,6 @@ trove_requires_pip_packages:
   - httplib2
   - python-glanceclient
   - python-keystoneclient
-  - python-memcached
-  - python-troveclient
   - virtualenv
   - virtualenv-tools
 
@@ -144,6 +143,8 @@ trove_pip_packages:
   - pexpect
   - pycrypto
   - trove
+  - python-troveclient
+  - python-memcached
 
 # This variable is used by the repo_build process to determine
 # which host group to check for members of before building the

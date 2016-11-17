@@ -28,5 +28,5 @@
 # Install trove
 - include: test-install-trove.yml
 
-# Test trove
-- include: test-trove-functional.yml
+# Install and execute Tempest
+- include: common/test-install-tempest.yml

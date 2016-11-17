@@ -37,9 +37,19 @@ trove_service_region: RegionOne
 trove_service_user_domain_id: default
 trove_service_user_name: trove
 trove_service_port: 8779
-trove_venv_tag: untagged
+trove_venv_tag: "untagged"
 trove_bin: "/openstack/venvs/trove-{{ trove_venv_tag }}/bin"
 neutron_service_port: 9696
 swift_proxy_port: 8080
 cinder_service_port: 8776
 nova_service_port: 8774
+
+tempest_run: yes
+
+tempest_plugins:
+  - name: trove
+    repo: https://git.openstack.org/openstack/trove
+    branch: master
+
+tempest_test_whitelist:
+  - trove.tests.tempest.tests.api.database.versions.*
