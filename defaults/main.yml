@@ -36,11 +36,11 @@ trove_regular_user_name: regular_trove_user
 trove_admin_user_name: admin_trove_user
 
 trove_service_name: trove
-trove_service_user_name: trove
+trove_service_user_name: "{{ trove_admin_user_name }}"
 trove_service_tenant_name: trove_for_trove_usage
 trove_service_type: database
 trove_service_description: "OpenStack DBaaS (Trove)"
-trove_service_project_name: service
+trove_service_project_name: "{{ trove_service_tenant_name }}"
 trove_service_admin_role_names:
   - admin
 trove_service_region: RegionOne

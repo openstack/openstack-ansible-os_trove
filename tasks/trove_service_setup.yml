@@ -88,7 +88,7 @@
     insecure: "{{ keystone_service_adminuri_insecure }}"
     user_name: "{{ trove_admin_user_name }}"
     tenant_name: "{{ trove_service_tenant_name }}"
-    password: "{{ trove_admin_user_password }}"
+    password: "{{ trove_service_password }}"
     project_name: "{{ trove_service_project_name }}"
   register: add_trove_admin_user
   until: add_trove_admin_user |success
