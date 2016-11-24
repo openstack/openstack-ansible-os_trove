@@ -16,9 +16,22 @@
 # (c) 2016 Donovan Francesco <donovan.francesco@is.co.za>
 # (c) 2016 Paul Stevens <paul.stevens@is.co.za>
 
-- include: trove_install_apt.yml
-  static: no
-  when: ansible_pkg_mgr == 'apt'
+- name: Ensure apt cache is up to date
+  apt:
+    update_cache: yes
+    cache_valid_time: "{{ cache_timeout }}"
+  when:
+    - ansible_pkg_mgr == 'apt'
+
+- name: Install distro packages
+  package:
+    name: "{{ item }}"
+    state: "{{ trove_package_state }}"
+  register: install_packages
+  until: install_packages|success
+  retries: 5
+  delay: 2
+  with_items: "{{ trove_distro_packages }}"
 
 - name: Create developer mode constraint file
   copy:
