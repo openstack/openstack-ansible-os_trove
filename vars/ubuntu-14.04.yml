@@ -17,7 +17,7 @@
 # (c) 2016 Paul Stevens <paul.stevens@is.co.za>
 cache_timeout: 600
 
-trove_apt_packages:
+trove_distro_packages:
   - apache2
   - apache2-utils
   - libapache2-mod-wsgi
