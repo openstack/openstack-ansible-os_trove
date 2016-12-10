@@ -33,6 +33,10 @@
       dest: "/etc/trove/trove.conf"
       config_overrides: "{{ trove_config_overrides }}"
       config_type: "ini"
+    - src: "policy.json.j2"
+      dest: "/etc/trove/policy.json"
+      config_overrides: "{{ trove_policy_overrides }}"
+      config_type: "json"
   notify:
     - Restart Apache
     - Restart trove API services
