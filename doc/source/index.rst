@@ -4,6 +4,9 @@ OpenStack-Ansible Trove
 
 This Ansible role installs Trove.
 
+To clone or view the source code for this repository, visit the role repository
+for `os_trove <https://github.com/openstack/openstack-ansible-os_trove>`_.
+
 Default variables
 ~~~~~~~~~~~~~~~~~
 
