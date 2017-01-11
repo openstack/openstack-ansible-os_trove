@@ -39,7 +39,7 @@
     group: "{{ item.group|default(trove_system_group_name) }}"
     mode: "{{ item.mode|default('0755') }}"
   with_items:
-    - { path: "/openstack", owner: "root", group: "root" }
+    - { path: "/openstack/venvs", owner: "root", group: "root" }
     - { path: "/etc/trove" }
     - { path: "{{ trove_system_user_home }}" }
     - { path: "/var/lib/trove/tmp" }
