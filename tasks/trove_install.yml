@@ -61,7 +61,7 @@
     dest: "/var/cache/{{ trove_venv_download_url | basename }}"
     checksum: "sha1:{{ lookup('url', trove_venv_download_url | replace('tgz', 'checksum')) }}"
   register: trove_get_venv
-  when: not trove_developer_mode | bool
+  when: trove_venv_download | bool
 
 - name: Remove existing venv
   file:
@@ -75,15 +75,14 @@
     state: directory
     mode: "0755"
   register: trove_venv_dir
+  when: trove_get_venv | changed
 
 - name: Unarchive pre-built venv
   unarchive:
     src: "/var/cache/{{ trove_venv_download_url | basename }}"
     dest: "{{ trove_bin | dirname }}"
     copy: "no"
-  when:
-    - not trove_developer_mode | bool
-    - trove_get_venv | changed or trove_venv_dir | changed
+  when: trove_get_venv | changed
   notify:
     - Restart trove API services
     - Restart trove conductor service
@@ -104,7 +103,7 @@
   until: install_packages|success
   retries: 5
   delay: 2
-  when: trove_developer_mode | bool
+  when: trove_get_venv | failed or trove_get_venv | skipped
   notify:
     - Restart trove API services
     - Restart trove conductor service
@@ -114,6 +113,4 @@
 - name: Update virtualenv path
   command: >
     virtualenv-tools --update-path=auto --reinitialize {{ trove_bin | dirname }}
-  when:
-    - not trove_developer_mode | bool
-    - trove_get_venv | changed or trove_venv_dir | changed
+  when: trove_get_venv | changed

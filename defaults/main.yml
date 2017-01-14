@@ -68,6 +68,9 @@ trove_profiler_enabled: false
 trove_venv_tag: untagged
 trove_bin: "/openstack/venvs/trove-{{ trove_venv_tag }}/bin"
 
+# venv_download, even when true, will use the fallback method of building the
+# venv from scratch if the venv download fails.
+trove_venv_download: "{{ not trove_developer_mode | bool }}"
 trove_venv_download_url: http://127.0.0.1/venvs/untagged/ubuntu/trove.tgz
 
 trove_git_repo: "https://git.openstack.org/openstack/trove"
