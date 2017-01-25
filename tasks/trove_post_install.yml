@@ -82,6 +82,10 @@
       dest: "/etc/trove/trove-taskmanager.conf"
       config_overrides: "{{ trove_taskmanager_config_overrides }}"
       config_type: "ini"
+    - src: "trove-guestagent.conf.j2"
+      dest: "/etc/trove/trove-guestagent.conf"
+      config_overrides: "{{ trove_guestagent_config_overrides }}"
+      config_type: "ini"
   notify:
     - Restart trove taskmanager service
   when: inventory_hostname in groups['trove_taskmanager']
