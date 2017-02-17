@@ -59,10 +59,13 @@ trove_swift_url: "{{ trove_service_publicuri_proto }}://{{ external_lb_vip_addre
 trove_neutron_url: "{{ trove_service_publicuri_proto }}://{{ external_lb_vip_address }}:{{ neutron_service_port }}/"
 trove_profiler_enabled: false
 
-# If ``trove_api_workers`` is unset the system will use half the number of
-# available VCPUS to compute the number of api workers to use.
-# trove_api_workers: 16
-# trove_api_workers: 16
+## Cap the maximum number of threads / workers when a user value is unspecified.
+trove_api_workers_max: 16
+trove_api_workers: "{{ [[ansible_processor_vcpus|default(2) // 2, 1] | max, trove_api_workers_max] | min }}"
+
+## Cap the maximum number of threads / workers when a user value is unspecified.
+trove_conductor_workers_max: 16
+trove_conductor_workers: "{{ [[ansible_processor_vcpus|default(2) // 2, 1] | max, trove_conductor_workers_max] | min }}"
 
 # Name of the virtual env to deploy into
 trove_venv_tag: untagged
@@ -88,7 +91,9 @@ trove_apache_log_level: info
 trove_apache_servertokens: "Prod"
 trove_apache_serversignature: "Off"
 trove_wsgi_threads: 1
-trove_wsgi_processes: "{{ ansible_processor_vcpus | default (1) * 2 }}"
+## Cap the maximum number of processes when a user value is unspecified.
+trove_wsgi_processes_max: 32
+trove_wsgi_processes: "{{ [[ansible_processor_vcpus|default(1), 1] | max * 2, trove_wsgi_processes_max] | min }}"
 
 # set trove_ssl to true to enable SSL configuration on the trove containers
 trove_ssl: false

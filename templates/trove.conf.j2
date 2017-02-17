@@ -1,11 +1,9 @@
 # {{ ansible_managed }}
-{% set _api_threads = ansible_processor_vcpus|default(2) // 2 %}
-{% set api_threads = _api_threads if _api_threads > 0 else 1 %}
 [DEFAULT]
 debug = {{ debug }}
 bind_host = {{ trove_service_host }}
 bind_port = {{ trove_service_port }}
-trove_api_workers={{ trove_api_workers | default(api_threads) }}
+trove_api_workers={{ trove_api_workers }}
 rpc_backend={{ trove_rpc_backend }}
 transport_url = rabbit://{% for host in trove_rabbitmq_servers.split(',') %}{{ trove_rabbitmq_userid }}:{{ trove_rabbitmq_password }}@{{ host }}:{{ trove_rabbitmq_port }}{% if not loop.last %},{% else %}/{{ trove_rabbitmq_vhost }}{% endif %}{% endfor %}
 
