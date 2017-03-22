@@ -126,7 +126,8 @@ trove_rabbitmq_port: 5672
 trove_rabbitmq_servers: "{{ rabbitmq_servers }}"
 
 # Keystone AuthToken/Middleware
-trove_keystone_auth_plugin: password
+trove_keystone_auth_plugin: "{{ trove_keystone_auth_type }}"
+trove_keystone_auth_type: password
 trove_service_project_domain_name: Default
 trove_service_user_domain_name: default
 trove_service_project_domain_id: default
