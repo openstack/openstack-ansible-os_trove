@@ -17,7 +17,22 @@ Default variables
 Required variables
 ~~~~~~~~~~~~~~~~~~
 
-None.
+This list is not exhaustive at present. See role internals for further
+details.
+
+.. code-block:: yaml
+
+    # Service and user passwords
+    trove_galera_password:
+    trove_rabbitmq_password:
+    trove_service_password:
+    trove_admin_user_password:
+    trove_regular_user_password:
+
+    # Trove RPC encryption keys.
+    trove_taskmanager_rpc_encr_key:
+    trove_inst_rpc_key_encr_key:
+
 
 Dependencies
 ~~~~~~~~~~~~

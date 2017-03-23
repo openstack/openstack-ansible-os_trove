@@ -10,6 +10,8 @@ transport_url = rabbit://{% for host in trove_rabbitmq_servers.split(',') %}{{ t
 
 {# There must be a blank line above or the following line will be appended to the previous. #}
 control_exchange = {{ trove_control_exchange }}
+enable_secure_rpc_messaging = {{ trove_enable_secure_rpc_messaging }}
+inst_rpc_key_encr_key = {{ trove_inst_rpc_key_encr_key }}
 
 [profiler]
 enabled = {{ trove_profiler_enabled }}

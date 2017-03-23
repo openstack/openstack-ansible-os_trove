@@ -109,7 +109,6 @@ trove_ssl_self_signed_regen: false
 trove_ssl_self_signed_subject: "/C=US/ST=Texas/L=San Antonio/O=IT/CN={{ internal_lb_vip_address }}/subjectAltName=IP.1={{ external_lb_vip_address }}"
 
 # Database vars
-
 trove_galera_database_name: trove
 trove_galera_user: trove
 trove_galera_address: "{{ internal_lb_vip_address }}"
@@ -125,6 +124,19 @@ trove_rabbitmq_vhost: /trove
 trove_rabbitmq_use_ssl: False
 trove_rabbitmq_port: 5672
 trove_rabbitmq_servers: "{{ rabbitmq_servers }}"
+
+# RPC encryption keys
+# See the Trove documentation as to the significance of the rpc encryption keys
+# Trove supplies default values but we enforce they not be left to their default values
+trove_enable_secure_rpc_messaging: "True"
+trove_required_secrets:
+  - trove_galera_password
+  - trove_rabbitmq_password
+  - trove_service_password
+  - trove_admin_user_password
+  - trove_regular_user_password
+  - trove_taskmanager_rpc_encr_key
+  - trove_inst_rpc_key_encr_key
 
 # Keystone AuthToken/Middleware
 trove_keystone_auth_plugin: password
