@@ -8,6 +8,10 @@ transport_url = rabbit://{% for host in trove_rabbitmq_servers.split(',') %}{{ t
 
 {# There must be a blank line above or the following line will be appended to the previous. #}
 control_exchange = {{ trove_control_exchange }}
+enable_secure_rpc_messaging = {{ trove_enable_secure_rpc_messaging }}
+taskmanager_rpc_encr_key = {{ trove_taskmanager_rpc_encr_key }}
+inst_rpc_key_encr_key = {{ trove_inst_rpc_key_encr_key }}
+
 db_api_implementation = trove.db.sqlalchemy.api
 trove_auth_url = {{ trove_auth_url }}
 nova_compute_url = {{ trove_nova_compute_url }}
