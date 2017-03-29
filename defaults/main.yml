@@ -180,3 +180,7 @@ trove_conductor_config_overrides: {}
 trove_taskmanager_config_overrides: {}
 trove_guestagent_config_overrides: {}
 trove_policy_overrides: {}
+
+trove_api_init_config_overrides: {}
+trove_conductor_init_config_overrides: {}
+trove_taskmanager_init_config_overrides: {}
