@@ -46,11 +46,12 @@ trove_service_admin_role_names:
 trove_service_region: RegionOne
 trove_service_host: "0.0.0.0"
 trove_service_port: 8779
-trove_service_publicuri_proto: http
+trove_service_proto: http
+trove_service_publicuri_proto: "{{ openstack_service_publicuri_proto | default(trove_service_proto) }}"
+trove_service_internaluri_proto: "{{ openstack_service_internaluri_proto | default(trove_service_proto) }}"
+trove_service_adminuri_proto: "{{ openstack_service_adminuri_proto | default(trove_service_proto) }}"
 trove_service_publicurl: "{{ trove_service_publicuri_proto }}://{{ external_lb_vip_address }}:{{ trove_service_port }}/v1.0/%(tenant_id)s"
-trove_service_internaluri_proto: http
 trove_service_internalurl: "{{ trove_service_internaluri_proto }}://{{ internal_lb_vip_address }}:{{ trove_service_port }}/v1.0/%(tenant_id)s"
-trove_service_adminuri_proto: http
 trove_service_adminurl: "{{ trove_service_adminuri_proto }}://{{ internal_lb_vip_address }}:{{ trove_service_port }}/v1.0/%(tenant_id)s"
 trove_auth_url: "{{ keystone_service_internalurl }}"
 trove_nova_compute_url: "{{ trove_service_internaluri_proto }}://{{ internal_lb_vip_address }}:{{ nova_service_port }}/v2.1"
