@@ -1,5 +1,6 @@
 ---
 # Copyright 2016 Internet Solutions (Pty) Ltd
+# Copyright 2017 IBM Corp
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -54,10 +55,15 @@ trove_service_publicurl: "{{ trove_service_publicuri_proto }}://{{ external_lb_v
 trove_service_internalurl: "{{ trove_service_internaluri_proto }}://{{ internal_lb_vip_address }}:{{ trove_service_port }}/v1.0/%(tenant_id)s"
 trove_service_adminurl: "{{ trove_service_adminuri_proto }}://{{ internal_lb_vip_address }}:{{ trove_service_port }}/v1.0/%(tenant_id)s"
 trove_auth_url: "{{ keystone_service_internalurl }}"
+
+# By default assume the trove service network is an internal one
+# It would be good to use the catalog service to lookup these URLs based on the endpoint type
+# but currently the Trove code doesn't work properly when endpoint types are specified
 trove_nova_compute_url: "{{ trove_service_internaluri_proto }}://{{ internal_lb_vip_address }}:{{ nova_service_port }}/v2.1"
-trove_cinder_url: "{{ trove_service_publicuri_proto }}://{{ external_lb_vip_address }}:{{ cinder_service_port }}/v1"
-trove_swift_url: "{{ trove_service_publicuri_proto }}://{{ external_lb_vip_address }}:{{ swift_proxy_port }}/v1/AUTH_"
-trove_neutron_url: "{{ trove_service_publicuri_proto }}://{{ external_lb_vip_address }}:{{ neutron_service_port }}/"
+trove_cinder_url: "{{ trove_service_internaluri_proto }}://{{ internal_lb_vip_address }}:{{ cinder_service_port }}/v1"
+trove_swift_url: "{{ trove_service_internaluri_proto }}://{{ internal_lb_vip_address }}:{{ swift_proxy_port }}/v1/AUTH_"
+trove_neutron_url: "{{ trove_service_internaluri_proto }}://{{ internal_lb_vip_address }}:{{ neutron_service_port }}/"
+
 trove_profiler_enabled: false
 
 ## Cap the maximum number of threads / workers when a user value is unspecified.
@@ -125,6 +131,39 @@ trove_rabbitmq_use_ssl: False
 trove_rabbitmq_port: 5672
 trove_rabbitmq_servers: "{{ rabbitmq_servers }}"
 
+# The trove guest agent in the deployed DB VMs need access to OpenStack services (keystone, swift, etc)
+# and also to rabbitmq. The way it gets access (networking) these services may differ.
+# By default assume:
+#   OpenStack services are accesses through public interfaces
+#   Infrastructure services (rabbitmq) are accessed through the defined provider network.
+#
+# The value of 'net_name' field of the provider network network to use for infrastructure services
+trove_provider_net_name: dbaas-mgmt
+trove_provider_network: "{{ provider_networks|map(attribute='network')|selectattr('net_name','defined')|selectattr('net_name', 'equalto', trove_provider_net_name)|list|first }}"
+# The value of 'ip_from_q' field
+trove_provider_ip_from_q: "{{ trove_provider_network['ip_from_q'] }}"
+# The name of the network address pool
+trove_container_net_name: "{{ trove_provider_ip_from_q }}_address"
+trove_guest_rabbitmq_servers: "{% for host in groups[rabbitmq_host_group] %}{{ hostvars[host]['container_networks'][trove_container_net_name]['address'] }}{% if not loop.last %},{% endif %}{% endfor %}"
+trove_guest_rabbitmq_use_ssl: "{{ trove_rabbitmq_use_ssl }}"
+# For OpenStack services that have public, admin, and internal access, use the public ones for the guest VMs.
+trove_guest_auth_url: "{{ keystone_service_publicurl }}"
+trove_guest_swift_url: "{{ trove_service_publicuri_proto }}://{{ external_lb_vip_address }}:{{ swift_proxy_port }}/v1/AUTH_"
+
+# Trove service network settings.
+# These values are used when creating an OpenStack network to be used by Trove. By default the network will
+# not be created.
+trove_service_net_setup: False
+trove_service_net_validate_certs: "False"
+trove_service_net_phys_net: dbaas-mgmt
+trove_service_net_type: flat
+trove_service_net_name: dbaas_service_net
+trove_service_subnet_name: dbaas_service_subnet
+trove_service_net_subnet_cidr: "192.168.20.0/24"
+trove_service_net_dhcp: "True"
+trove_service_net_allocation_pool_start: "192.168.20.100"
+trove_service_net_allocation_pool_end: "192.168.20.120"
+
 # RPC encryption keys
 # See the Trove documentation as to the significance of the rpc encryption keys
 # Trove supplies default values but we enforce they not be left to their default values
@@ -158,6 +197,8 @@ trove_requires_pip_packages:
   - python-keystoneclient
   - virtualenv
   - virtualenv-tools
+  - shade
+  - futures
 
 trove_pip_packages:
   - MySQL-python
@@ -167,6 +208,7 @@ trove_pip_packages:
   - trove
   - python-troveclient
   - python-memcached
+  - os-client-config
 
 # This variable is used by the repo_build process to determine
 # which host group to check for members of before building the

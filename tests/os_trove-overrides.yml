@@ -27,6 +27,8 @@ trove_rabbitmq_use_ssl: "{{ rabbitmq_use_ssl }}"
 trove_rabbitmq_password: "secrete"
 trove_rabbitmq_userid: trove
 trove_rabbitmq_vhost: /trove
+trove_guest_rabbitmq_servers: "{{ trove_rabbitmq_servers }}"
+trove_guest_auth_url: "{{ trove_auth_url }}"
 trove_requirements_git_install_branch: master
 trove_service_password: "secrete"
 trove_regular_user_password: "secrete"

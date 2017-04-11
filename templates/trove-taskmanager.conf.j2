@@ -13,25 +13,44 @@ taskmanager_rpc_encr_key = {{ trove_taskmanager_rpc_encr_key }}
 inst_rpc_key_encr_key = {{ trove_inst_rpc_key_encr_key }}
 
 db_api_implementation = trove.db.sqlalchemy.api
-trove_auth_url = {{ trove_auth_url }}
-nova_compute_url = {{ trove_nova_compute_url }}
-cinder_url = {{ trove_cinder_url }}
-swift_url = {{ trove_swift_url }}
-neutron_url = {{ trove_neutron_url }}
-os_region_name = {{ trove_service_region }}
-nova_compute_service_type = compute
-cinder_service_type = volumev2
-swift_service_type = object-store
-heat_service_type = orchestration
-neutron_service_type = network
 trove_volume_support = True
 block_device_mapping = vdb
 device_path = /dev/vdb
 mount_point = /var/lib/mysql
 volume_time_out=30
 server_delete_time_out=480
-use_nova_server_config_drive = False
+use_nova_server_config_drive = True
 taskmanager_manager=trove.taskmanager.manager.Manager
+
+# Keystone
+trove_auth_url = {{ trove_auth_url }}
+os_region_name = {{ trove_service_region }}
+
+# Nova
+nova_compute_url = {{ trove_nova_compute_url }}
+nova_compute_service_type = compute
+nova_proxy_admin_user = {{ trove_service_user_name }}
+nova_proxy_admin_pass = {{ trove_service_password }}
+nova_proxy_admin_tenant_name = {{ trove_service_project_name }}
+
+# Cinder
+cinder_url = {{ trove_cinder_url }}
+cinder_service_type = volumev2
+
+#Swift
+swift_url = {{ trove_swift_url }}
+swift_service_type = object-store
+
+# Neutron
+neutron_url = {{ trove_neutron_url }}
+neutron_service_type = network
+network_driver = trove.network.neutron.NeutronDriver
+default_neutron_networks = {{ trove_service_net_id }}
+
+# Heat
+heat_service_type = orchestration
+
+# Notifications
 exists_notification_transformer = trove.extensions.mgmt.instances.models.NovaNotificationTransformer
 exists_notification_ticks = 30
 notification_service_id = mysql:2f3ff068-2bfb-4f70-9a9d-a6bb65bc084b
@@ -49,16 +68,6 @@ dns_driver = trove.dns.designate.driver.DesignateDriver
 dns_instance_entry_factory = trove.dns.designate.driver.DesignateInstanceEntryFactory
 dns_endpoint_url = http://127.0.0.1/v1/
 dns_service_type = dns
-
-# Neutron
-network_driver = trove.network.nova.NovaNetwork
-default_neutron_networks =
-
-# Nova
-nova_compute_url = {{ trove_nova_compute_url }}
-nova_proxy_admin_user = {{ trove_service_user_name }}
-nova_proxy_admin_pass = {{ trove_service_password }}
-nova_proxy_admin_tenant_name = {{ trove_service_project_name }}
 
 # Trove Security Groups for Instances
 trove_security_groups_support = True
@@ -82,11 +91,9 @@ template_path = /etc/trove/templates/
 pydev_debug = disabled
 
 # ================= Guestagent related ========================
-#guest_config = /etc/trove/trove-guestagent.conf
-# Use 'guest_info = /etc/guest_info' for pre-Kilo compatibility
-#guest_info = guest_info.conf
-# Use 'injected_config_location = /etc/trove' for pre-Kilo compatibility
-#injected_config_location = /etc/trove/conf.d
+guest_config = /etc/trove/trove-guestagent.conf
+guest_info = guest_info.conf
+injected_config_location = /etc/trove/conf.d
 #cloudinit_location = /etc/trove/cloudinit
 
 [database]
@@ -101,35 +108,4 @@ enabled = {{ trove_profiler_enabled }}
 [oslo_messaging_rabbit]
 rabbit_use_ssl={{ trove_rabbitmq_use_ssl }}
 
-[mysql]
-tcp_ports = 3306
-volume_support = True
-device_path = /dev/vdb
-
-[redis]
-tcp_ports = 6379
-# redis uses local storage
-volume_support = False
-# default device_path = None
-
-[cassandra]
-tcp_ports = 7000, 7001, 9042, 9160
-volume_support = True
-device_path = /dev/vdb
-
-[couchbase]
-tcp_ports = 8091, 8092, 4369, 11209-11211, 21100-21199
-volume_support = True
-device_path = /dev/vdb
-
-[mongodb]
-volume_support = True
-device_path = /dev/vdb
-
-[vertica]
-tcp_ports = 5433, 5434, 22, 5444, 5450, 4803
-udp_ports = 5433, 4803, 4804, 6453
-volume_support = True
-device_path = /dev/vdb
-mount_point = /var/lib/vertica
-taskmanager_strategy = trove.common.strategies.cluster.experimental.vertica.taskmanager.VerticaTaskManagerStrategy
+{% include 'include_db.j2' %}

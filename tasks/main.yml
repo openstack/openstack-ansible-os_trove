@@ -43,6 +43,11 @@
   tags:
     - trove-install
 
+- include: trove_service_network.yml
+  tags:
+    - trove-install
+    - trove-config
+
 - include: trove_post_install.yml
   tags:
     - trove-install
