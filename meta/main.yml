@@ -4,7 +4,7 @@ galaxy_info:
   description: Deploy Trove with OpenStack Ansible
   company: OpenStack
   license: Apache-2.0
-  min_ansible_version: 2.0
+  min_ansible_version: 2.2
   version: 0.1.0
   platforms:
   - name: Ubuntu
