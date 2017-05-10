@@ -50,11 +50,18 @@
   retries: 5
   delay: 2
 
+- name: Retrieve checksum for venv download
+  uri:
+    url: "{{ trove_venv_download_url | replace('tgz', 'checksum') }}"
+    return_content: yes
+  register: trove_venv_checksum
+  when: trove_venv_download | bool
+
 - name: Attempt venv download
   get_url:
     url: "{{ trove_venv_download_url }}"
     dest: "/var/cache/{{ trove_venv_download_url | basename }}"
-    checksum: "sha1:{{ lookup('url', trove_venv_download_url | replace('tgz', 'checksum')) }}"
+    checksum: "sha1:{{ trove_venv_checksum.content | trim }}"
   register: trove_get_venv
   when: trove_venv_download | bool
 
