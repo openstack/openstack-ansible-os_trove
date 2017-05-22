@@ -116,3 +116,10 @@
   command: >
     virtualenv-tools --update-path=auto --reinitialize {{ trove_bin | dirname }}
   when: trove_get_venv | changed
+
+- name: Record the venv tag deployed
+  ini_file:
+    dest: "/etc/ansible/facts.d/openstack_ansible.fact"
+    section: trove
+    option: venv_tag
+    value: "{{ trove_venv_tag }}"
