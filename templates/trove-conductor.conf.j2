@@ -22,4 +22,4 @@ enabled = {{ trove_profiler_enabled }}
 connection = "{{ trove_galera_connection_string }}"
 
 [oslo_messaging_rabbit]
-rabbit_use_ssl={{ trove_rabbitmq_use_ssl }}
+ssl={{ trove_rabbitmq_use_ssl }}

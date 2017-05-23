@@ -106,6 +106,6 @@ enabled = {{ trove_profiler_enabled }}
 #trace_sqlalchemy = True
 
 [oslo_messaging_rabbit]
-rabbit_use_ssl={{ trove_rabbitmq_use_ssl }}
+ssl={{ trove_rabbitmq_use_ssl }}
 
 {% include 'include_db.j2' %}
