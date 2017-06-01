@@ -3,7 +3,6 @@
 [DEFAULT]
 debug = {{ debug }}
 update_status_on_fail = True
-rpc_backend={{ trove_rpc_backend }}
 transport_url = rabbit://{% for host in trove_rabbitmq_servers.split(',') %}{{ trove_rabbitmq_userid }}:{{ trove_rabbitmq_password }}@{{ host }}:{{ trove_rabbitmq_port }}{% if not loop.last %},{% else %}/{{ trove_rabbitmq_vhost }}{% endif %}{% endfor %}
 
 {# There must be a blank line above or the following line will be appended to the previous. #}

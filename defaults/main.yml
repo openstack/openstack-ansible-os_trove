@@ -122,7 +122,6 @@ trove_db_sync_options:
 trove_galera_connection_string: "mysql+pymysql://{{ trove_galera_user}}:{{ trove_galera_password }}@{{ trove_galera_address }}/{{ trove_galera_database_name }}?charset=utf8"
 
 # Rabbit vars
-trove_rpc_backend: rabbit
 trove_control_exchange: trove
 trove_rabbit_notification_topic: notification
 trove_rabbitmq_userid: trove
