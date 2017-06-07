@@ -201,14 +201,14 @@ trove_requires_pip_packages:
   - futures
 
 trove_pip_packages:
+  - cryptography
   - MySQL-python
-  - PyMySQL
+  - os-client-config
   - pexpect
-  - pycrypto
-  - trove
+  - PyMySQL
   - python-troveclient
   - python-memcached
-  - os-client-config
+  - trove
 
 # This variable is used by the repo_build process to determine
 # which host group to check for members of before building the
