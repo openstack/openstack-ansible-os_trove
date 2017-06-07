@@ -163,6 +163,7 @@ trove_service_net_subnet_cidr: "192.168.20.0/24"
 trove_service_net_dhcp: "True"
 trove_service_net_allocation_pool_start: "192.168.20.100"
 trove_service_net_allocation_pool_end: "192.168.20.120"
+trove_service_net_endpoint_type: internal
 
 # RPC encryption keys
 # See the Trove documentation as to the significance of the rpc encryption keys
