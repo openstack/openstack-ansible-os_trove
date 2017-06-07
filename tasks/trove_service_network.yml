@@ -37,6 +37,7 @@
       provider_network_type: "{{ trove_service_net_type }}"
       project: "{{ keystone_admin_tenant_id }}"
       wait: yes
+      endpoint_type: "{{ trove_service_net_endpoint_type }}"
     register: trove_network
     run_once: true
 
@@ -53,6 +54,7 @@
       enable_dhcp: "{{ trove_service_net_dhcp }}"
       project: "{{ keystone_admin_tenant_id }}"
       wait: yes
+      endpoint_type: "{{ trove_service_net_endpoint_type }}"
     register: subnet_create
     run_once: true
   # Block end
