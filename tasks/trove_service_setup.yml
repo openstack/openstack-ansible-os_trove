@@ -15,7 +15,7 @@
 #
 # (c) 2016 Donovan Francesco <donovan.francesco@is.co.za>
 # (c) 2016 Paul Stevens <paul.stevens@is.co.za>
-# Reference: http://docs.openstack.org/developer/trove/dev/manual_install.html
+# Reference: https://docs.openstack.org/trove/latest/install/manual_install.html
 - name: Ensure the trove tenant exists
   keystone:
     command: "ensure_tenant"
