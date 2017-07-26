@@ -32,7 +32,6 @@ details.
     trove_rabbitmq_password:
     trove_service_password:
     trove_admin_user_password:
-    trove_regular_user_password:
 
     # Trove RPC encryption keys.
     trove_taskmanager_rpc_encr_key:

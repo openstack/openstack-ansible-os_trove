@@ -33,7 +33,6 @@ trove_api_program_name: trove-api
 trove_conductor_program_name: trove-conductor
 trove_taskmanager_program_name: trove-taskmanager
 
-trove_regular_user_name: regular_trove_user
 trove_admin_user_name: admin_trove_user
 
 trove_service_name: trove
@@ -173,7 +172,6 @@ trove_required_secrets:
   - trove_rabbitmq_password
   - trove_service_password
   - trove_admin_user_password
-  - trove_regular_user_password
   - trove_taskmanager_rpc_encr_key
   - trove_inst_rpc_key_encr_key
 
