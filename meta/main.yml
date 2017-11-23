@@ -10,6 +10,9 @@ galaxy_info:
   - name: Ubuntu
     versions:
     - xenial
+  - name: EL
+    versions:
+    - 7
   galaxy_tags:
    - cloud
    - openstack
