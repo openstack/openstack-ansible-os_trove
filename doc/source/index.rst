@@ -19,11 +19,12 @@ Default variables
   :language: yaml
   :start-after: under the License.
 
-Required variables
-~~~~~~~~~~~~~~~~~~
+Dependencies
+~~~~~~~~~~~~
 
-This list is not exhaustive at present. See role internals for further
-details.
+This role needs pip >= 7.1 installed on the target host.
+
+To use this role, define the following variables:
 
 .. code-block:: yaml
 
@@ -37,11 +38,8 @@ details.
     trove_taskmanager_rpc_encr_key:
     trove_inst_rpc_key_encr_key:
 
-
-Dependencies
-~~~~~~~~~~~~
-
-None.
+This list is not exhaustive at present. See role internals for further
+details.
 
 Example playbook
 ~~~~~~~~~~~~~~~~
