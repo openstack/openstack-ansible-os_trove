@@ -118,7 +118,9 @@ trove_galera_database_name: trove
 trove_galera_user: trove
 trove_galera_address: "{{ internal_lb_vip_address }}"
 trove_db_sync_options:
-trove_galera_connection_string: "mysql+pymysql://{{ trove_galera_user}}:{{ trove_galera_password }}@{{ trove_galera_address }}/{{ trove_galera_database_name }}?charset=utf8"
+trove_galera_use_ssl: "{{ galera_use_ssl | default(False) }}"
+trove_galera_ssl_ca_cert: "{{ galera_ssl_ca_cert | default('/etc/ssl/certs/galera-ca.pem') }}"
+trove_galera_connection_string: "mysql+pymysql://{{ trove_galera_user}}:{{ trove_galera_password }}@{{ trove_galera_address }}/{{ trove_galera_database_name }}?charset=utf8{% if trove_galera_use_ssl | bool %}&ssl_ca={{ trove_galera_ssl_ca_cert }}{% endif %}"
 
 # Rabbit vars
 trove_control_exchange: trove
