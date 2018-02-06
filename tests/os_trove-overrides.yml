@@ -51,8 +51,8 @@ tempest_run: yes
 
 tempest_plugins:
   - name: trove
-    repo: https://git.openstack.org/openstack/trove
+    repo: https://git.openstack.org/openstack/trove-tempest-plugin
     branch: master
 
 tempest_test_whitelist:
-  - trove.tests.tempest.tests.api.database.versions.*
+  - trove_tempest_plugin.tests.api.database.versions.*
