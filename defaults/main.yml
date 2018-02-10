@@ -196,7 +196,6 @@ trove_requires_pip_packages:
   - python-glanceclient
   - python-keystoneclient
   - virtualenv
-  - virtualenv-tools
   - shade
   - futures
 
