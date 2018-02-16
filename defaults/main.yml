@@ -83,7 +83,7 @@ trove_venv_download: "{{ not trove_developer_mode | bool }}"
 trove_venv_download_url: http://127.0.0.1/venvs/untagged/ubuntu/trove.tgz
 
 trove_git_repo: "https://git.openstack.org/openstack/trove"
-trove_git_install_branch: master
+trove_git_install_branch: "stable/queens"
 
 trove_developer_mode: false
 trove_developer_constraints:
