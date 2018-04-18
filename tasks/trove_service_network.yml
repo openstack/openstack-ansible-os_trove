@@ -22,6 +22,7 @@
       login_user: "{{ keystone_admin_user_name }}"
       login_password: "{{ keystone_auth_admin_password }}"
       login_project_name: "{{ keystone_admin_tenant_name }}"
+    no_log: True
 
   - name: Store admin tenant id
     set_fact:
