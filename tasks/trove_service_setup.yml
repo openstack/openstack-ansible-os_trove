@@ -31,6 +31,7 @@
   until: add_trove_tenant |success
   retries: 5
   delay: 2
+  no_log: True
   tags:
     - trove-api-setup
     - trove-service-add
@@ -51,6 +52,7 @@
   until: add_trove_service |success
   retries: 5
   delay: 2
+  no_log: True
   tags:
     - trove-api-setup
     - trove-service-add
@@ -72,6 +74,7 @@
   until: add_trove_admin_user |success
   retries: 5
   delay: 2
+  no_log: True
   tags:
     - trove-api-setup
     - trove-service-add
@@ -95,6 +98,7 @@
   retries: 5
   delay: 2
   with_items: "{{ trove_service_admin_role_names }}"
+  no_log: True
 
 - name: Ensure the trove endpoint is registered
   keystone:
@@ -118,3 +122,4 @@
   until: add_trove_endpoints |success
   retries: 5
   delay: 2
+  no_log: True
