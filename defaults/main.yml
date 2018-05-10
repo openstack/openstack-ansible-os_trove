@@ -29,10 +29,6 @@ trove_system_user_home: "/var/lib/{{ trove_system_user_name }}"
 trove_log_directory: /var/log/trove
 trove_etc_directory: /etc/trove
 
-trove_api_program_name: trove-api
-trove_conductor_program_name: trove-conductor
-trove_taskmanager_program_name: trove-taskmanager
-
 trove_admin_user_name: admin_trove_user
 
 trove_service_name: trove
@@ -185,9 +181,6 @@ trove_service_user_domain_name: default
 trove_service_project_domain_id: default
 trove_service_user_domain_id: default
 
-trove_conductor_service_name: "{{ trove_conductor_program_name }}"
-trove_taskmanager_service_name: "{{ trove_taskmanager_program_name }}"
-
 #Glance images
 trove_glance_images: []
 
@@ -226,3 +219,24 @@ trove_policy_overrides: {}
 trove_api_init_config_overrides: {}
 trove_conductor_init_config_overrides: {}
 trove_taskmanager_init_config_overrides: {}
+
+## Service Name-Group Mapping
+trove_services:
+  trove-api:
+    group: trove_api
+    service_name: trove-api
+    execstarts: "{{ trove_bin }}/trove-api"
+    init_config_overrides: "{{ trove_api_init_config_overrides }}"
+    start_order: 1
+  trove-conductor:
+    group: trove_conductor
+    service_name: trove-conductor
+    execstarts: "{{ trove_bin }}/trove-conductor"
+    init_config_overrides: "{{ trove_conductor_init_config_overrides }}"
+    start_order: 2
+  trove-taskmanager:
+    group: trove_taskmanager
+    service_name: trove-taskmanager
+    execstarts: "{{ trove_bin }}/trove-taskmanager"
+    init_config_overrides: "{{ trove_taskmanager_init_config_overrides }}"
+    start_order: 3

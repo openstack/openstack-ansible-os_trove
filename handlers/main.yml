@@ -16,23 +16,21 @@
 # (c) 2016 Donovan Francesco <donovan.francesco@is.co.za>
 # (c) 2016 Paul Stevens <paul.stevens@is.co.za>
 - name: Restart trove API services
-  service:
-    name: "{{ trove_api_program_name }}"
+  systemd:
+    name: "{{ trove_services['trove-api']['service_name'] }}"
     state: "restarted"
-  failed_when: false
-  when: not trove_use_mod_wsgi | bool
+  when:
+    - not trove_use_mod_wsgi | bool
 
 - name: Restart trove conductor service
-  service:
-    name: "{{ trove_conductor_service_name }}"
+  systemd:
+    name: "{{ trove_services['trove-conductor']['service_name'] }}"
     state: "restarted"
-  failed_when: false
 
 - name: Restart trove taskmanager service
-  service:
-    name: "{{ trove_taskmanager_service_name }}"
+  systemd:
+    name: "{{ trove_services['trove-conductor']['service_name'] }}"
     state: "restarted"
-  failed_when: false
 
 - name: Restart Apache
   service:

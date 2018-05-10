@@ -18,7 +18,7 @@
 - name: Perform a trove DB sync
   command: >
     {{ trove_bin }}/trove-manage
-    --config-file=/etc/trove/{{ trove_conductor_program_name }}.conf
+    --config-file=/etc/trove/{{ trove_services['trove-conductor']['service_name'] }}.conf
     db_sync {{ trove_db_sync_options }}
   become: yes
   become_user: "{{ trove_system_user_name }}"
