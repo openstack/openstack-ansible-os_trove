@@ -119,14 +119,26 @@ trove_galera_use_ssl: "{{ galera_use_ssl | default(False) }}"
 trove_galera_ssl_ca_cert: "{{ galera_ssl_ca_cert | default('/etc/ssl/certs/galera-ca.pem') }}"
 trove_galera_connection_string: "mysql+pymysql://{{ trove_galera_user}}:{{ trove_galera_password }}@{{ trove_galera_address }}/{{ trove_galera_database_name }}?charset=utf8{% if trove_galera_use_ssl | bool %}&ssl_ca={{ trove_galera_ssl_ca_cert }}{% endif %}"
 
+## Oslo Messaging vars
+# RPC
+trove_oslomsg_rpc_transport: rabbit
+trove_oslomsg_rpc_servers: "{{ rabbitmq_servers }}"
+trove_oslomsg_rpc_port: 5672
+trove_oslomsg_rpc_use_ssl: False
+trove_oslomsg_rpc_userid: trove
+trove_oslomsg_rpc_vhost: /trove
+
+# Notify
+trove_oslomsg_notify_transport: rabbit
+trove_oslomsg_notify_servers: "{{ rabbitmq_servers }}"
+trove_oslomsg_notify_port: 5672
+trove_oslomsg_notify_use_ssl: False
+trove_oslomsg_notify_userid: trove
+trove_oslomsg_notify_vhost: /trove
+
 # Rabbit vars
 trove_control_exchange: trove
 trove_rabbit_notification_topic: notification
-trove_rabbitmq_userid: trove
-trove_rabbitmq_vhost: /trove
-trove_rabbitmq_use_ssl: False
-trove_rabbitmq_port: 5672
-trove_rabbitmq_servers: "{{ rabbitmq_servers }}"
 
 # The trove guest agent in the deployed DB VMs need access to OpenStack services (keystone, swift, etc)
 # and also to rabbitmq. The way it gets access (networking) these services may differ.
@@ -141,8 +153,10 @@ trove_provider_network: "{{ provider_networks|map(attribute='network')|selectatt
 trove_provider_ip_from_q: "{{ trove_provider_network['ip_from_q'] }}"
 # The name of the network address pool
 trove_container_net_name: "{{ trove_provider_ip_from_q }}_address"
-trove_guest_rabbitmq_servers: "{% for host in groups[rabbitmq_host_group] %}{{ hostvars[host]['container_networks'][trove_container_net_name]['address'] }}{% if not loop.last %},{% endif %}{% endfor %}"
-trove_guest_rabbitmq_use_ssl: "{{ trove_rabbitmq_use_ssl }}"
+trove_guest_oslomsg_rpc_servers: "{% for host in groups[oslomsg_rpc_host_group] %}{{ hostvars[host]['container_networks'][trove_container_net_name]['address'] }}{% if not loop.last %},{% endif %}{% endfor %}"
+trove_guest_oslomsg_rpc_use_ssl: "{{ trove_oslomsg_rpc_use_ssl }}"
+trove_guest_oslomsg_notify_servers: "{% for host in groups[oslomsg_notify_host_group] %}{{ hostvars[host]['container_networks'][trove_container_net_name]['address'] }}{% if not loop.last %},{% endif %}{% endfor %}"
+trove_guest_oslomsg_notify_use_ssl: "{{ trove_oslomsg_notify_use_ssl }}"
 # For OpenStack services that have public, admin, and internal access, use the public ones for the guest VMs.
 trove_guest_auth_url: "{{ keystone_service_publicurl }}"
 trove_guest_swift_url: "{{ trove_service_publicuri_proto }}://{{ external_lb_vip_address }}:{{ swift_proxy_port }}/v1/AUTH_"
@@ -168,7 +182,8 @@ trove_service_net_endpoint_type: internal
 trove_enable_secure_rpc_messaging: "True"
 trove_required_secrets:
   - trove_galera_password
-  - trove_rabbitmq_password
+  - trove_oslomsg_rpc_password
+  - trove_oslomsg_notify_password
   - trove_service_password
   - trove_admin_user_password
   - trove_taskmanager_rpc_encr_key

@@ -6,7 +6,7 @@ nova_proxy_admin_user = {{ trove_service_user_name }}
 nova_proxy_admin_pass = {{ trove_service_password }}
 nova_proxy_admin_tenant_name = {{ trove_service_project_name }}
 
-transport_url = rabbit://{% for host in trove_rabbitmq_servers.split(',') %}{{ trove_rabbitmq_userid }}:{{ trove_rabbitmq_password }}@{{ host }}:{{ trove_rabbitmq_port }}{% if not loop.last %},{% else %}/{{ trove_rabbitmq_vhost }}{% endif %}{% endfor %}
+transport_url = {{ trove_oslomsg_rpc_transport }}://{% for host in trove_oslomsg_rpc_servers.split(',') %}{{ trove_oslomsg_rpc_userid }}:{{ trove_oslomsg_rpc_password }}@{{ host }}:{{ trove_oslomsg_rpc_port }}{% if not loop.last %},{% else %}/{{ trove_oslomsg_rpc_vhost }}{% endif %}{% endfor %}
 
 {% if trove_swift_enabled is defined %}
 swift_url = {{ trove_guest_swift_url }}
@@ -56,7 +56,10 @@ log_file = trove-guestagent.log
 [oslo_messaging_rabbit]
 # Connect over SSL for RabbitMQ. (boolean value)
 # Deprecated group/name - [DEFAULT]/rabbit_use_ssl
-ssl = {{ trove_guest_rabbitmq_use_ssl }}
+ssl = {{ trove_guest_oslomsg_rpc_use_ssl }}
+
+[oslo_messaging_notifications]
+transport_url = {{ trove_oslomsg_notify_transport }}://{% for host in trove_oslomsg_notify_servers.split(',') %}{{ trove_oslomsg_notify_userid }}:{{ trove_oslomsg_notify_password }}@{{ host }}:{{ trove_oslomsg_notify_port }}{% if not loop.last %},{% else %}/{{ trove_oslomsg_notify_vhost }}{% endif %}{% endfor %}
 
 # ========== Datastore Specific Configuration Options ==========
 

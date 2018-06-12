@@ -10,15 +10,15 @@ Configuring Trove
 
 Trove provides DBaaS to an OpenStack deployment. It deploys guest VMs that
 provide the desired DB for use by the end consumer. The trove guest VMs need
-connectivity back to the trove services via RPC (rabbitmq) and the OpenStack
-services. The way these guest VM get access to those services could be via
-internal networking (in the case of rabbitmq) or via public interfaces (in the
-case of OpenStack services). For the example configuration, we'll designate
-a provider network as the network for trove to provision on each guest VM. The
-guest can then connect to rabbitmq via this network and to the OpenStack
-services externally. Optionally, the guest VMs could use the internal network
-to access OpenStack services, but that would require more containers being
-bound to this network.
+connectivity back to the trove services via RPC (oslo.messaging) and the
+OpenStack services. The way these guest VM get access to those services could be
+via internal networking (in the case of oslo.messaging) or via public interfaces
+(in the case of OpenStack services). For the example configuration, we'll
+designate a provider network as the network for trove to provision on each guest
+VM. The guest can then connect to oslo.messaging via this network and to the
+OpenStack services externally. Optionally, the guest VMs could use the internal
+network to access OpenStack services, but that would require more containers
+being bound to this network.
 
 The deployment configuration outlined below may not be appropriate for
 production environments. Review this very carefully with your own security
@@ -45,14 +45,14 @@ An example entry into ``openstack_user_config.yml`` is shown below:
         net_name: "dbaas-mgmt"
         group_binds:
           - neutron_linuxbridge_agent
-          - rabbitmq
+          - oslomsg_rpc
 
 Make sure to modify the other entries in this file as well.
 
 The ``net_name`` will be the physical network that is specified when creating
 the neutron network. The default value of ``dbaas-mgmt`` is also used to
-lookup the addresses of the rabbitmq container. If the default is not used then
-some variables in ``defaults\main.yml`` will need to be overwritten.
+lookup the addresses of the rpc messaging container. If the default is not used
+then some variables in ``defaults\main.yml`` will need to be overwritten.
 
 By default this role will not create the neutron network automaticaly. However,
 the default values can be changed to create the neutron network. See the

@@ -3,7 +3,7 @@
 [DEFAULT]
 debug = {{ debug }}
 update_status_on_fail = True
-transport_url = rabbit://{% for host in trove_rabbitmq_servers.split(',') %}{{ trove_rabbitmq_userid }}:{{ trove_rabbitmq_password }}@{{ host }}:{{ trove_rabbitmq_port }}{% if not loop.last %},{% else %}/{{ trove_rabbitmq_vhost }}{% endif %}{% endfor %}
+transport_url = {{ trove_oslomsg_rpc_transport }}://{% for host in trove_oslomsg_rpc_servers.split(',') %}{{ trove_oslomsg_rpc_userid }}:{{ trove_oslomsg_rpc_password }}@{{ host }}:{{ trove_oslomsg_rpc_port }}{% if not loop.last %},{% else %}/{{ trove_oslomsg_rpc_vhost }}{% endif %}{% endfor %}
 
 {# There must be a blank line above or the following line will be appended to the previous. #}
 control_exchange = {{ trove_control_exchange }}
@@ -100,6 +100,9 @@ enabled = {{ trove_profiler_enabled }}
 #trace_sqlalchemy = True
 
 [oslo_messaging_rabbit]
-ssl={{ trove_rabbitmq_use_ssl }}
+ssl={{ trove_oslomsg_rpc_use_ssl }}
+
+[oslo_messaging_notifications]
+transport_url = {{ trove_oslomsg_notify_transport }}://{% for host in trove_oslomsg_notify_servers.split(',') %}{{ trove_oslomsg_notify_userid }}:{{ trove_oslomsg_notify_password }}@{{ host }}:{{ trove_oslomsg_notify_port }}{% if not loop.last %},{% else %}/{{ trove_oslomsg_notify_vhost }}{% endif %}{% endfor %}
 
 {% include 'include_db.j2' %}
