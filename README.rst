@@ -29,7 +29,7 @@ Example Playbook
 
 .. code-block:: yaml
 
-   - name: Install trove server
+   - name: Install trove service
      hosts: trove_all
      user: root
      roles:
