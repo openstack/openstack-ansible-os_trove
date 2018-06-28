@@ -21,9 +21,6 @@
   user: root
   gather_facts: true
   pre_tasks:
-    - include: common/create-grant-db.yml
-      db_name: "{{ trove_galera_database_name }}"
-      db_password: "{{ trove_galera_password }}"
     - include: common/ensure-rabbitmq.yml
       vhost_name: "{{ trove_rabbitmq_vhost }}"
       user_name: "{{ trove_rabbitmq_userid }}"
