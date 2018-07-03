@@ -197,6 +197,7 @@ trove_pip_packages:
   - cryptography
   - MySQL-python
   - os-client-config
+  - osprofiler
   - pexpect
   - PyMySQL
   - python-troveclient
