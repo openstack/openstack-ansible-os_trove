@@ -18,14 +18,7 @@
 cache_timeout: 600
 
 trove_distro_packages:
-  - gcc
-  - gcc-c++
-  - git
   - httpd
   - httpd-tools
-  - libxslt-devel
-  - mariadb
   - mod_wsgi
-  - python-devel
-  - python-pip
   - qemu-img
