@@ -28,7 +28,7 @@
     project_name: "{{ trove_service_project_name }}"
     description: "{{ trove_service_description }}"
   register: add_trove_tenant
-  until: add_trove_tenant |success
+  until: add_trove_tenant  is success
   retries: 5
   delay: 2
   no_log: True
@@ -49,7 +49,7 @@
     service_type: "{{ trove_service_type }}"
     description: "{{ trove_service_description }}"
   register: add_trove_service
-  until: add_trove_service |success
+  until: add_trove_service  is success
   retries: 5
   delay: 2
   no_log: True
@@ -71,7 +71,7 @@
     password: "{{ trove_service_password }}"
     project_name: "{{ trove_service_project_name }}"
   register: add_trove_admin_user
-  until: add_trove_admin_user |success
+  until: add_trove_admin_user  is success
   retries: 5
   delay: 2
   no_log: True
@@ -94,7 +94,7 @@
     insecure: "{{ keystone_service_adminuri_insecure }}"
     project_name: "{{ trove_service_project_name }}"
   register: ensure_trove_admin_roles
-  until: ensure_trove_admin_roles |success
+  until: ensure_trove_admin_roles  is success
   retries: 5
   delay: 2
   with_items: "{{ trove_service_admin_role_names }}"
@@ -119,7 +119,7 @@
       - url: "{{ trove_service_adminurl }}"
         interface: "admin"
   register: add_trove_endpoints
-  until: add_trove_endpoints |success
+  until: add_trove_endpoints  is success
   retries: 5
   delay: 2
   no_log: True
