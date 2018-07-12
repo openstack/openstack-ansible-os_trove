@@ -17,6 +17,11 @@
 # (c) 2016 Donovan Francesco <donovan.francesco@is.co.za>
 # (c) 2016 Paul Stevens <paul.stevens@is.co.za>
 
+# Set the host which will execute the shade modules
+# for the service setup. The host must already have
+# clouds.yaml properly configured.
+trove_service_setup_host: "{{ openstack_service_setup_host | default('localhost') }}"
+
 trove_package_state: "latest"
 trove_pip_package_state: "latest"
 
@@ -199,14 +204,6 @@ trove_service_user_domain_id: default
 
 #Glance images
 trove_glance_images: []
-
-trove_requires_pip_packages:
-  - httplib2
-  - python-glanceclient
-  - python-keystoneclient
-  - virtualenv
-  - shade
-  - futures
 
 trove_pip_packages:
   - cryptography
