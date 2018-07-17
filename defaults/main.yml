@@ -126,18 +126,22 @@ trove_galera_connection_string: "mysql+pymysql://{{ trove_galera_user}}:{{ trove
 
 ## Oslo Messaging vars
 # RPC
-trove_oslomsg_rpc_transport: rabbit
-trove_oslomsg_rpc_servers: "{{ rabbitmq_servers }}"
-trove_oslomsg_rpc_port: 5672
-trove_oslomsg_rpc_use_ssl: False
+trove_oslomsg_rpc_host_group: "{{ oslomsg_rpc_host_group | default('rabbitmq_all') }}"
+trove_oslomsg_rpc_setup_host: "{{ (trove_oslomsg_rpc_host_group in groups) | ternary(groups[trove_oslomsg_rpc_host_group][0], 'localhost') }}"
+trove_oslomsg_rpc_transport: "{{ oslomsg_rpc_transport | default('rabbit') }}"
+trove_oslomsg_rpc_servers: "{{ oslomsg_rpc_servers | default('127.0.0.1') }}"
+trove_oslomsg_rpc_port: "{{ oslomsg_rpc_port | default('5672') }}"
+trove_oslomsg_rpc_use_ssl: "{{ oslomsg_rpc_use_ssl | default(False) }}"
 trove_oslomsg_rpc_userid: trove
 trove_oslomsg_rpc_vhost: /trove
 
 # Notify
-trove_oslomsg_notify_transport: rabbit
-trove_oslomsg_notify_servers: "{{ rabbitmq_servers }}"
-trove_oslomsg_notify_port: 5672
-trove_oslomsg_notify_use_ssl: False
+trove_oslomsg_notify_host_group: "{{ oslomsg_notify_host_group | default('rabbitmq_all') }}"
+trove_oslomsg_notify_setup_host: "{{ (trove_oslomsg_notify_host_group in groups) | ternary(groups[trove_oslomsg_notify_host_group][0], 'localhost') }}"
+trove_oslomsg_notify_transport: "{{ oslomsg_notify_transport | default('rabbit') }}"
+trove_oslomsg_notify_servers: "{{ oslomsg_notify_servers | default('127.0.0.1') }}"
+trove_oslomsg_notify_port: "{{ oslomsg_notify_port | default('5672') }}"
+trove_oslomsg_notify_use_ssl: "{{ oslomsg_notify_use_ssl | default(False) }}"
 trove_oslomsg_notify_userid: trove
 trove_oslomsg_notify_vhost: /trove
 
@@ -158,10 +162,10 @@ trove_provider_network: "{{ provider_networks|map(attribute='network')|selectatt
 trove_provider_ip_from_q: "{{ trove_provider_network['ip_from_q'] }}"
 # The name of the network address pool
 trove_container_net_name: "{{ trove_provider_ip_from_q }}_address"
-trove_guest_oslomsg_rpc_servers: "{% for host in groups[oslomsg_rpc_host_group] %}{{ hostvars[host]['container_networks'][trove_container_net_name]['address'] }}{% if not loop.last %},{% endif %}{% endfor %}"
-trove_guest_oslomsg_rpc_use_ssl: "{{ trove_oslomsg_rpc_use_ssl }}"
-trove_guest_oslomsg_notify_servers: "{% for host in groups[oslomsg_notify_host_group] %}{{ hostvars[host]['container_networks'][trove_container_net_name]['address'] }}{% if not loop.last %},{% endif %}{% endfor %}"
-trove_guest_oslomsg_notify_use_ssl: "{{ trove_oslomsg_notify_use_ssl }}"
+trove_guest_oslomsg_rpc_servers: "{{ oslomsg_rpc_servers | default('127.0.0.1') }}"
+trove_guest_oslomsg_rpc_use_ssl: "{{ oslomsg_rpc_use_ssl | default(False) }}"
+trove_guest_oslomsg_notify_servers: "{{ oslomsg_notify_servers | default('127.0.0.1') }}"
+trove_guest_oslomsg_notify_use_ssl: "{{ oslomsg_notify_use_ssl | default(False) }}"
 # For OpenStack services that have public, admin, and internal access, use the public ones for the guest VMs.
 trove_guest_auth_url: "{{ keystone_service_publicurl }}"
 trove_guest_swift_url: "{{ trove_service_publicuri_proto }}://{{ external_lb_vip_address }}:{{ swift_proxy_port }}/v1/AUTH_"
