@@ -145,6 +145,10 @@ trove_oslomsg_notify_use_ssl: "{{ oslomsg_notify_use_ssl | default(False) }}"
 trove_oslomsg_notify_userid: trove
 trove_oslomsg_notify_vhost: /trove
 
+## Qdrouterd integration
+# TODO(ansmith): Change structure when more backends will be supported
+trove_oslomsg_amqp1_enabled: "{{ trove_oslomsg_rpc_transport == 'amqp' }}"
+
 # Rabbit vars
 trove_control_exchange: trove
 trove_rabbit_notification_topic: notification
@@ -219,6 +223,9 @@ trove_pip_packages:
   - python-troveclient
   - python-memcached
   - trove
+
+trove_optional_oslomsg_amqp1_pip_packages:
+  - oslo.messaging[amqp1]
 
 # This variable is used by the repo_build process to determine
 # which host group to check for members of before building the

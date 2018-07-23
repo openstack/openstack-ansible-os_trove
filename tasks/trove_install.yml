@@ -128,6 +128,23 @@
   tags:
     - skip_ansible_lint
 
+- name: Install optional pip packages
+  pip:
+    name: "{{ trove_optional_oslomsg_amqp1_pip_packages }}"
+    state: "{{ trove_pip_package_state }}"
+    virtualenv: "{{ trove_bin | dirname }}"
+    virtualenv_site_packages: "no"
+  when: trove_oslomsg_amqp1_enabled
+  register: install_optional_packages
+  until: install_optional_packages is success
+  retries: 5
+  delay: 2
+  notify:
+    - Restart trove API services
+    - Restart trove conductor service
+    - Restart trove taskmanager service
+    - Restart Apache
+
 - name: Record the venv tag deployed
   ini_file:
     dest: "/etc/ansible/facts.d/openstack_ansible.fact"
