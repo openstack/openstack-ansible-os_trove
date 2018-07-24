@@ -35,20 +35,20 @@
   tags:
     - always
 
-- include: trove_pre_install.yml
+- include_tasks: trove_pre_install.yml
   tags:
     - trove-install
 
-- include: trove_install.yml
+- include_tasks: trove_install.yml
   tags:
     - trove-install
 
-- include: trove_service_network.yml
+- include_tasks: trove_service_network.yml
   tags:
     - trove-install
     - trove-config
 
-- include: trove_post_install.yml
+- include_tasks: trove_post_install.yml
   tags:
     - trove-install
     - trove-config
@@ -81,7 +81,7 @@
     - trove-config
     - systemd-service
 
-- include: trove_service_setup.yml
+- include_tasks: trove_service_setup.yml
   when: inventory_hostname == groups['trove_api'][0]
   tags:
     - trove-install
@@ -105,13 +105,12 @@
     - common-mq
     - trove-config
 
-- include: trove_db_setup.yml
+- include_tasks: trove_db_setup.yml
   when: inventory_hostname == groups['trove_conductor'][0]
   tags:
     - trove-install
 
-- include: trove_apache.yml
-  static: no
+- include_tasks: trove_apache.yml
   when: trove_use_mod_wsgi | bool
   tags:
     - trove-install
