@@ -20,15 +20,7 @@
   hosts: trove_all
   user: root
   gather_facts: true
-  pre_tasks:
-    - include: common/ensure-oslomsg.yml
-      rpc_vhost: "{{ trove_oslomsg_rpc_vhost }}"
-      rpc_user: "{{ trove_oslomsg_rpc_userid }}"
-      rpc_password: "{{ trove_oslomsg_rpc_password }}"
-      notify_vhost: "{{ trove_oslomsg_notify_vhost }}"
-      notify_user: "{{ trove_oslomsg_notify_userid }}"
-      notify_password: "{{ trove_oslomsg_notify_password }}"
-  roles:
-    - role: "os_trove"
   vars_files:
     - common/test-vars.yml
+  roles:
+    - role: "os_trove"

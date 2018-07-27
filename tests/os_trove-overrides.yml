@@ -18,34 +18,12 @@
 
 trove_developer_mode: True
 trove_galera_password: "secrete"
-trove_oslomsg_rpc_port: "{{ oslomsg_rpc_port }}"
-trove_oslomsg_rpc_servers: "{ oslomsg_rpc_servers }}"
-trove_oslomsg_rpc_use_ssl: "{{ oslomsg_rpc_use_ssl }}"
 trove_oslomsg_rpc_password: "secrete"
-trove_oslomsg_rpc_userid: trove
-trove_oslomsg_rpc_vhost: /trove
-trove_guest_oslomsg_rpc_servers: "{{ trove_oslomsg_rpc_servers }}"
-trove_oslomsg_notify_port: "{{ oslomsg_notify_port }}"
-trove_oslomsg_notify_servers: "{ oslomsg_notify_servers }}"
-trove_oslomsg_notify_use_ssl: "{{ oslomsg_notify_use_ssl }}"
-trove_oslomsg_notify_password: "secrete"
-trove_oslomsg_notify_userid: trove
-trove_oslomsg_notify_vhost: /trove
-trove_guest_oslomsg_notify_servers: "{{ trove_oslomsg_notify_servers }}"
 trove_guest_auth_url: "{{ trove_auth_url }}"
-trove_requirements_git_install_branch: master
 trove_service_password: "secrete"
 trove_admin_user_password: "secrete"
 trove_taskmanager_rpc_encr_key: bzH6y0SGmjuoY0FNSTptrhgieGXNDX6PIhvz
 trove_inst_rpc_key_encr_key: emYjgHFqfXNB1NGehAFIUeoyw4V4XwWHEaKP
-trove_service_project_domain_id: default
-trove_service_project_name: service
-trove_service_region: RegionOne
-trove_service_user_domain_id: default
-trove_service_user_name: trove
-trove_service_port: 8779
-trove_venv_tag: "untagged"
-trove_bin: "/openstack/venvs/trove-{{ trove_venv_tag }}/bin"
 neutron_service_port: 9696
 swift_proxy_port: 8080
 cinder_service_port: 8776
