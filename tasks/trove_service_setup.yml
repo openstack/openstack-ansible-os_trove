@@ -46,6 +46,7 @@
         cloud: default
         state: present
         name: "{{ trove_service_project_name }}"
+        domain_id: "{{ trove_service_project_domain_id }}"
         description: "{{ trove_service_description }}"
         endpoint_type: admin
         verify: "{{ not keystone_service_adminuri_insecure }}"
