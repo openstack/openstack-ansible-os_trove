@@ -54,4 +54,4 @@ tempest_plugins:
     branch: master
 
 tempest_test_whitelist:
-  - trove_tempest_plugin.tests.api.database.versions.*
+  - trove_tempest_plugin.tests.api.test_versions.*
