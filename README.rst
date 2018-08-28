@@ -7,11 +7,25 @@ Team and repository tags
 
 .. Change things from this point on
 
-OpenStack-Ansible Trove (DBaaS)
-###############################
+=======================
+OpenStack-Ansible Trove
+=======================
 
 Ansible role that installs and configures OpenStack Trove. Trove is
 installed behind the Apache webserver listening on port 8779 by default.
+
+Documentation for the project can be found at:
+`<https://docs.openstack.org/openstack-ansible-os_trove/latest/>`_
+
+Release notes for the project can be found at:
+`<https://docs.openstack.org/releasenotes/openstack-ansible-os_trove/>`_
+
+The project source code repository is located at:
+`<https://git.openstack.org/cgit/openstack/openstack-ansible-os_trove>`_
+
+The project home is at:
+`<https://launchpad.net/openstack-ansible>`_
+
 
 Required Variables
 ==================
@@ -37,22 +51,3 @@ Example Playbook
      vars:
        is_metal: "{{ properties.is_metal|default(false) }}"
 
-.. Change things from this point on
-
-=========================
-OpenStack-Ansible Trove
-=========================
-
-Ansible role that installs and configures OpenStack Trove.
-
-Documentation for the project can be found at:
-`<https://docs.openstack.org/openstack-ansible-os_trove/latest/>`_
-
-Release notes for the project can be found at:
-`<https://docs.openstack.org/releasenotes/openstack-ansible-os_trove/>`_
-
-The project source code repository is located at:
-`<https://git.openstack.org/cgit/openstack/openstack-ansible-os_trove>`_
-
-The project home is at:
-`<https://launchpad.net/openstack-ansible>`_

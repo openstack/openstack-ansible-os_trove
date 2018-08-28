@@ -8,13 +8,14 @@ Configuring Trove
    Be sure to fully understand the security implications of the deployed
    architecture.
 
-Trove provides DBaaS to an OpenStack deployment. It deploys guest VMs that
-provide the desired DB for use by the end consumer. The trove guest VMs need
-connectivity back to the trove services via RPC (oslo.messaging) and the
-OpenStack services. The way these guest VM get access to those services could be
-via internal networking (in the case of oslo.messaging) or via public interfaces
-(in the case of OpenStack services). For the example configuration, we'll
-designate a provider network as the network for trove to provision on each guest
+Trove provides DBaaS to an OpenStack deployment. It deploys guest VMs
+that provide the desired DB for use by the end consumer. The trove
+guest VMs need connectivity back to the trove services via RPC
+(oslo.messaging) and the OpenStack services. The way these guest VM
+get access to those services could be via internal networking (in the
+case of oslo.messaging) or via public interfaces (in the case of
+OpenStack services). For the example configuration, we'll designate a
+provider network as the network for trove to provision on each guest
 VM. The guest can then connect to oslo.messaging via this network and to the
 OpenStack services externally. Optionally, the guest VMs could use the internal
 network to access OpenStack services, but that would require more containers
