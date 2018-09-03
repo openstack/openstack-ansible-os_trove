@@ -16,18 +16,12 @@
 # (c) 2016 Donovan Francesco <donovan.francesco@is.co.za>
 # (c) 2016 Paul Stevens <paul.stevens@is.co.za>
 
-- name: Install distro packages
-  package:
-    name: "{{ item }}"
-    state: "{{ trove_package_state }}"
-    update_cache: "{{ (ansible_pkg_mgr == 'apt') | ternary('yes', omit) }}"
-    cache_valid_time: "{{ (ansible_pkg_mgr == 'apt') | ternary(cache_timeout, omit) }}"
-  register: install_packages
-  until: install_packages is success
-  retries: 5
-  delay: 2
-  with_items: "{{ trove_distro_packages }}"
-
+# TODO(odyssey4me):
+# This can be simplified once all the roles are using
+# python_venv_build. We can then switch to using a
+# set of constraints in pip.conf inside the venv,
+# perhaps prepared by giving a giving a list of
+# constraints to the role.
 - name: Create developer mode constraint file
   copy:
     dest: "/opt/developer-pip-constraints.txt"
@@ -38,116 +32,22 @@
   when:
     - trove_developer_mode | bool
 
-- name: Retrieve checksum for venv download
-  uri:
-    url: "{{ trove_venv_download_url | replace('tgz', 'checksum') }}"
-    return_content: yes
-  register: trove_venv_checksum
-  when: trove_venv_download | bool
-
-- name: Attempt venv download
-  get_url:
-    url: "{{ trove_venv_download_url }}"
-    dest: "/var/cache/{{ trove_venv_download_url | basename }}"
-    checksum: "sha1:{{ trove_venv_checksum.content | trim }}"
-  register: trove_get_venv
-  when: trove_venv_download | bool
-
-- name: Remove existing venv
-  file:
-    path: "{{ trove_bin | dirname }}"
-    state: absent
-  when: trove_get_venv  is changed
-
-- name: Create trove venv dir
-  file:
-    path: "{{ trove_bin | dirname }}"
-    state: directory
-    mode: "0755"
-  register: trove_venv_dir
-  when: trove_get_venv  is changed
-
-- name: Unarchive pre-built venv
-  unarchive:
-    src: "/var/cache/{{ trove_venv_download_url | basename }}"
-    dest: "{{ trove_bin | dirname }}"
-    copy: "no"
-  when: trove_get_venv  is changed
-  notify:
-    - Restart trove API services
-    - Restart trove conductor service
-    - Restart trove taskmanager service
-    - Restart Apache
-
-- name: Install pip packages
-  pip:
-    name: "{{ trove_pip_packages }}"
-    state: "{{ trove_pip_package_state }}"
-    virtualenv: "{{ trove_bin | dirname }}"
-    virtualenv_site_packages: "no"
-    extra_args: >-
-      {{ trove_developer_mode | ternary(pip_install_developer_constraints | default('--constraint /opt/developer-pip-constraints.txt'), '') }}
-      {{ (pip_install_upper_constraints is defined) | ternary('--constraint ' + pip_install_upper_constraints | default(''),'') }}
-      {{ pip_install_options | default('') }}
-  register: install_packages
-  until: install_packages is success
-  retries: 5
-  delay: 2
-  when: trove_get_venv | failed or trove_get_venv | skipped
-  notify:
-    - Restart trove API services
-    - Restart trove conductor service
-    - Restart trove taskmanager service
-    - Restart Apache
-
-- name: Remove python from path first (CentOS, openSUSE)
-  file:
-    path:  "{{ trove_bin | dirname }}/bin/python2.7"
-    state: "absent"
+- name: Ensure remote wheel building is disabled in developer mode
+  set_fact:
+    venv_build_host: "{{ ansible_hostname }}"
   when:
-    - ansible_pkg_mgr in ['yum', 'dnf', 'zypper']
-    - trove_get_venv  is changed
+    - trove_developer_mode | bool
 
-# NOTE(odyssey4me):
-# We reinitialize the venv to ensure that the right
-# version of python is in the venv, but we do not
-# want virtualenv to also replace pip, setuptools
-# and wheel so we tell it not to.
-# We do not use --always-copy for CentOS/SuSE due
-# to https://github.com/pypa/virtualenv/issues/565
-- name: Update virtualenv path
-  shell: |
-    find {{ trove_bin }} -name \*.pyc -delete
-    sed -si '1s/^.*python.*$/#!{{ trove_bin | replace ('/','\/') }}\/python/' {{ trove_bin }}/*
-    virtualenv {{ trove_bin | dirname }} \
-        {{ (ansible_pkg_mgr == 'apt') | ternary('--always-copy', '') }} \
-        --no-pip \
-        --no-setuptools \
-        --no-wheel
-  when: trove_get_venv  is changed
-  tags:
-    - skip_ansible_lint
-
-- name: Install optional pip packages
-  pip:
-    name: "{{ trove_optional_oslomsg_amqp1_pip_packages }}"
-    state: "{{ trove_pip_package_state }}"
-    virtualenv: "{{ trove_bin | dirname }}"
-    virtualenv_site_packages: "no"
-  when: trove_oslomsg_amqp1_enabled
-  register: install_optional_packages
-  until: install_optional_packages is success
-  retries: 5
-  delay: 2
-  notify:
-    - Restart trove API services
-    - Restart trove conductor service
-    - Restart trove taskmanager service
-    - Restart Apache
-
-- name: Record the venv tag deployed
-  ini_file:
-    dest: "/etc/ansible/facts.d/openstack_ansible.fact"
-    section: trove
-    option: venv_tag
-    value: "{{ trove_venv_tag }}"
+- name: Install the python venv
+  include_role:
+    name: "python_venv_build"
+    private: yes
+  vars:
+    venv_install_destination_path: "{{ trove_bin | dirname }}"
+    venv_install_distro_package_list: "{{ trove_distro_packages }}"
+    venv_pip_install_args: "{{ trove_pip_install_args }}"
+    venv_pip_packages: "{{ (trove_oslomsg_amqp1_enabled | bool) | ternary(trove_pip_packages + trove_optional_oslomsg_amqp1_pip_packages, trove_pip_packages) }}"
+    venv_facts_when_changed:
+      - section: "trove"
+        option: "venv_tag"
+        value: "{{ trove_venv_tag }}"

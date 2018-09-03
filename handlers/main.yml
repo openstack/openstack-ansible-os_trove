@@ -21,16 +21,25 @@
     state: "restarted"
   when:
     - not trove_use_mod_wsgi | bool
+  listen:
+    - "Restart trove services"
+    - "venv changed"
 
 - name: Restart trove conductor service
   systemd:
     name: "{{ trove_services['trove-conductor']['service_name'] }}"
     state: "restarted"
+  listen:
+    - "Restart trove services"
+    - "venv changed"
 
 - name: Restart trove taskmanager service
   systemd:
     name: "{{ trove_services['trove-conductor']['service_name'] }}"
     state: "restarted"
+  listen:
+    - "Restart trove services"
+    - "venv changed"
 
 - name: Restart Apache
   service:
@@ -41,3 +50,6 @@
   until: apache_restart is success
   retries: 5
   delay: 2
+  listen:
+    - "Restart trove services"
+    - "venv changed"

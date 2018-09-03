@@ -74,8 +74,19 @@ trove_api_workers: "{{ [[ansible_processor_vcpus|default(2) // 2, 1] | max, trov
 trove_conductor_workers_max: 16
 trove_conductor_workers: "{{ [[ansible_processor_vcpus|default(2) // 2, 1] | max, trove_conductor_workers_max] | min }}"
 
+# TODO(odyssey4me):
+# This can be simplified once all the roles are using
+# python_venv_build. We can then switch to using a
+# set of constraints in pip.conf inside the venv,
+# perhaps prepared by giving a giving a list of
+# constraints to the role.
+trove_pip_install_args: >-
+  {{ trove_developer_mode | ternary(pip_install_developer_constraints | default('--constraint /opt/developer-pip-constraints.txt'), '') }}
+  {{ (pip_install_upper_constraints is defined) | ternary('--constraint ' + pip_install_upper_constraints | default(''), '') }}
+  {{ pip_install_options | default('') }}
+
 # Name of the virtual env to deploy into
-trove_venv_tag: untagged
+trove_venv_tag: "{{ venv_tag | default('untagged') }}"
 trove_bin: "/openstack/venvs/trove-{{ trove_venv_tag }}/bin"
 
 # venv_download, even when true, will use the fallback method of building the
