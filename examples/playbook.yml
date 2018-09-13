@@ -1,3 +1,4 @@
+---
 - name: Install trove
    hosts: all
    user: root
