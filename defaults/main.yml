@@ -201,7 +201,6 @@ trove_requires_pip_packages:
 
 trove_pip_packages:
   - cryptography
-  - MySQL-python
   - os-client-config
   - pexpect
   - PyMySQL
