@@ -59,6 +59,7 @@ log_file = trove-guestagent.log
 ssl = {{ trove_guest_oslomsg_rpc_use_ssl }}
 
 [oslo_messaging_notifications]
+driver = {% if trove_ceilometer_enabled %}messagingv2{% else %}noop{% endif %}
 transport_url = {{ trove_oslomsg_notify_transport }}://{% for host in trove_oslomsg_notify_servers.split(',') %}{{ trove_oslomsg_notify_userid }}:{{ trove_oslomsg_notify_password }}@{{ host }}:{{ trove_oslomsg_notify_port }}{% if not loop.last %},{% else %}/{{ trove_oslomsg_notify_vhost }}{% endif %}{% endfor %}
 
 # ========== Datastore Specific Configuration Options ==========
