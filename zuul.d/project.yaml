@@ -22,7 +22,6 @@
         - openstack-ansible-linters
         - openstack-ansible-functional-ubuntu-xenial
         - openstack-ansible-functional-centos-7
-        - openstack-ansible-trove-ssl-nv
     experimental:
       jobs:
         - openstack-ansible-integrated-deploy-aio
