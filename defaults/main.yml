@@ -74,6 +74,9 @@ trove_api_workers: "{{ [[ansible_processor_vcpus|default(2) // 2, 1] | max, trov
 trove_conductor_workers_max: 16
 trove_conductor_workers: "{{ [[ansible_processor_vcpus|default(2) // 2, 1] | max, trove_conductor_workers_max] | min }}"
 
+# Enable/Disable Ceilometer
+trove_ceilometer_enabled: False
+
 # TODO(odyssey4me):
 # This can be simplified once all the roles are using
 # python_venv_build. We can then switch to using a
