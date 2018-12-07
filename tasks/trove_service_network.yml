@@ -36,6 +36,7 @@
       name: "{{ trove_service_net_name }}"
       provider_physical_network: "{{ trove_service_net_phys_net }}"
       provider_network_type: "{{ trove_service_net_type }}"
+      provider_segmentation_id: "{{ trove_service_net_segmentation_id | default(omit) }}"
       project: "{{ keystone_admin_tenant_id }}"
       wait: yes
       endpoint_type: "{{ trove_service_net_endpoint_type }}"

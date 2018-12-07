@@ -198,6 +198,8 @@ trove_service_net_validate_certs: "False"
 trove_service_net_phys_net: dbaas-mgmt
 trove_service_net_type: flat
 trove_service_net_name: dbaas_service_net
+# Network segmentation ID if vlan, gre...
+# trove_service_net_segmentation_id:
 trove_service_subnet_name: dbaas_service_subnet
 trove_service_net_subnet_cidr: "192.168.20.0/24"
 trove_service_net_dhcp: "True"
