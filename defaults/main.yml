@@ -78,32 +78,18 @@ trove_conductor_workers: "{{ [[ansible_processor_vcpus|default(2) // 2, 1] | max
 # Enable/Disable Ceilometer
 trove_ceilometer_enabled: False
 
-# TODO(odyssey4me):
-# This can be simplified once all the roles are using
-# python_venv_build. We can then switch to using a
-# set of constraints in pip.conf inside the venv,
-# perhaps prepared by giving a giving a list of
-# constraints to the role.
-trove_pip_install_args: >-
-  {{ trove_developer_mode | ternary(pip_install_developer_constraints | default('--constraint /opt/developer-pip-constraints.txt'), '') }}
-  {{ (pip_install_upper_constraints is defined) | ternary('--constraint ' + pip_install_upper_constraints | default(''), '') }}
-  {{ pip_install_options | default('') }}
+trove_pip_install_args: "{{ pip_install_options | default('') }}"
 
 # Name of the virtual env to deploy into
 trove_venv_tag: "{{ venv_tag | default('untagged') }}"
 trove_bin: "/openstack/venvs/trove-{{ trove_venv_tag }}/bin"
 
-# venv_download, even when true, will use the fallback method of building the
-# venv from scratch if the venv download fails.
-trove_venv_download: "{{ not trove_developer_mode | bool }}"
-trove_venv_download_url: http://127.0.0.1/venvs/untagged/ubuntu/trove.tgz
-
 trove_git_repo: "https://git.openstack.org/openstack/trove"
 trove_git_install_branch: master
-
-trove_developer_mode: false
-trove_developer_constraints:
+trove_upper_constraints_url: "{{ requirements_git_url | default('https://git.openstack.org/cgit/openstack/requirements/plain/upper-constraints.txt?h=' ~ requirements_git_install_branch | default('master')) }}"
+trove_git_constraints:
   - "git+{{ trove_git_repo }}@{{ trove_git_install_branch }}#egg=trove"
+  - "--constraint {{ trove_upper_constraints_url }}"
 
 #: Set this to false to disable API service through Apache + mod_wsgi
 trove_use_mod_wsgi: false
@@ -164,6 +150,9 @@ trove_oslomsg_notify_vhost: "{{ trove_oslomsg_rpc_vhost }}"
 ## Qdrouterd integration
 # TODO(ansmith): Change structure when more backends will be supported
 trove_oslomsg_amqp1_enabled: "{{ trove_oslomsg_rpc_transport == 'amqp' }}"
+
+# Specific pip packages provided by the user
+trove_user_pip_packages: []
 
 # Rabbit vars
 trove_control_exchange: trove

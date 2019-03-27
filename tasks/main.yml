@@ -39,7 +39,20 @@
   tags:
     - trove-install
 
-- include_tasks: trove_install.yml
+- name: Install the python venv
+  import_role:
+    name: "python_venv_build"
+  vars:
+    venv_build_constraints: "{{ trove_git_constraints }}"
+    venv_install_destination_path: "{{ trove_bin | dirname }}"
+    venv_install_distro_package_list: "{{ trove_distro_packages }}"
+    venv_pip_install_args: "{{ trove_pip_install_args }}"
+    venv_pip_packages: "{{ trove_pip_packages | union(trove_user_pip_packages) +
+    (trove_oslomsg_amqp1_enabled | bool) | ternary(trove_optional_oslomsg_amqp1_pip_packages, []) }}"
+    venv_facts_when_changed:
+      - section: "trove"
+        option: "venv_tag"
+        value: "{{ trove_venv_tag }}"
   tags:
     - trove-install
 
