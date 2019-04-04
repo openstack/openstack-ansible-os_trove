@@ -16,7 +16,7 @@
 # (c) 2016 Donovan Francesco <donovan.francesco@is.co.za>
 # (c) 2016 Paul Stevens <paul.stevens@is.co.za>
 
-trove_developer_mode: True
+trove_service_net_setup: true
 trove_galera_password: "secrete"
 trove_oslomsg_rpc_password: "secrete"
 trove_guest_auth_url: "{{ trove_auth_url }}"

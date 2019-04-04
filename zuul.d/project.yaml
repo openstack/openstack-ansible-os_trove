@@ -14,7 +14,18 @@
 
 - project:
     templates:
-      - openstack-ansible-role-jobs
       - check-requirements
+      - openstack-ansible-linters
       - publish-openstack-docs-pti
       - release-notes-jobs-python3
+    check:
+      jobs:
+        - openstack-ansible-deploy-aio_metal_trove-centos-7
+        - openstack-ansible-deploy-aio_metal_trove-ubuntu-bionic
+    gate:
+      jobs:
+        - openstack-ansible-deploy-aio_metal_trove-centos-7
+        - openstack-ansible-deploy-aio_metal_trove-ubuntu-bionic
+    experimental:
+      jobs:
+        - openstack-ansible-deploy-aio_metal_trove-opensuse-150
