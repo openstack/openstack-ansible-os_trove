@@ -21,10 +21,12 @@
     check:
       jobs:
         - openstack-ansible-deploy-aio_metal_trove-centos-7
+        - openstack-ansible-deploy-aio_metal_trove-debian-stable
         - openstack-ansible-deploy-aio_metal_trove-ubuntu-bionic
     gate:
       jobs:
         - openstack-ansible-deploy-aio_metal_trove-centos-7
+        - openstack-ansible-deploy-aio_metal_trove-debian-stable
         - openstack-ansible-deploy-aio_metal_trove-ubuntu-bionic
     experimental:
       jobs:
