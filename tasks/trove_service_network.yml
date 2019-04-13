@@ -1,4 +1,5 @@
 ---
+
 # Copyright 2016,2017 IBM Corp.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,74 +14,83 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- block:
-  - name: Get admin tenant id
-    keystone:
-      command: get_tenant
-      tenant_name: admin
-      endpoint: "{{ keystone_service_adminurl }}"
-      login_user: "{{ keystone_admin_user_name }}"
-      login_password: "{{ keystone_auth_admin_password }}"
-      login_project_name: "{{ keystone_admin_tenant_name }}"
-    no_log: True
+- name: Set up the service network
+  delegate_to: "{{ trove_service_setup_host }}"
+  vars:
+    ansible_python_interpreter: "{{ trove_service_setup_host_python_interpreter }}"
+  block:
+    - name: Get admin tenant id
+      keystone:
+        command: get_tenant
+        tenant_name: admin
+        endpoint: "{{ keystone_service_adminurl }}"
+        login_user: "{{ keystone_admin_user_name }}"
+        login_password: "{{ keystone_auth_admin_password }}"
+        login_project_name: "{{ keystone_admin_tenant_name }}"
+      no_log: True
 
-  - name: Store admin tenant id
-    set_fact:
-      keystone_admin_tenant_id: "{{ keystone_facts.id }}"
+    - name: Store admin tenant id
+      set_fact:
+        keystone_admin_tenant_id: "{{ keystone_facts.id }}"
 
-  - name: Create trove service network
-    os_network:
-      cloud: default
-      validate_certs: "{{ trove_service_net_validate_certs }}"
-      state: present
-      name: "{{ trove_service_net_name }}"
-      provider_physical_network: "{{ trove_service_net_phys_net }}"
-      provider_network_type: "{{ trove_service_net_type }}"
-      provider_segmentation_id: "{{ trove_service_net_segmentation_id | default(omit) }}"
-      project: "{{ keystone_admin_tenant_id }}"
-      wait: yes
-      endpoint_type: "{{ trove_service_net_endpoint_type }}"
-    register: trove_network
-    run_once: true
+    - name: Create trove service network
+      os_network:
+        cloud: default
+        validate_certs: "{{ trove_service_net_validate_certs }}"
+        state: present
+        name: "{{ trove_service_net_name }}"
+        provider_physical_network: "{{ trove_service_net_phys_net }}"
+        provider_network_type: "{{ trove_service_net_type }}"
+        provider_segmentation_id: "{{ trove_service_net_segmentation_id | default(omit) }}"
+        project: "{{ keystone_admin_tenant_id }}"
+        wait: yes
+        endpoint_type: "{{ trove_service_net_endpoint_type }}"
+      register: trove_network
+      run_once: true
 
-  - name: Create trove service subnet
-    os_subnet:
-      cloud: default
-      validate_certs: "{{ trove_service_net_validate_certs }}"
-      state: present
-      network_name: "{{ trove_service_net_name }}"
-      name: "{{ trove_service_subnet_name }}"
-      allocation_pool_start: "{{ trove_service_net_allocation_pool_start | default(omit) }}"
-      allocation_pool_end: "{{ trove_service_net_allocation_pool_end | default(omit) }}"
-      cidr: "{{ trove_service_net_subnet_cidr }}"
-      enable_dhcp: "{{ trove_service_net_dhcp }}"
-      project: "{{ keystone_admin_tenant_id }}"
-      wait: yes
-      endpoint_type: "{{ trove_service_net_endpoint_type }}"
-    register: subnet_create
-    run_once: true
+    - name: Create trove service subnet
+      os_subnet:
+        cloud: default
+        validate_certs: "{{ trove_service_net_validate_certs }}"
+        state: present
+        network_name: "{{ trove_service_net_name }}"
+        name: "{{ trove_service_subnet_name }}"
+        allocation_pool_start: "{{ trove_service_net_allocation_pool_start | default(omit) }}"
+        allocation_pool_end: "{{ trove_service_net_allocation_pool_end | default(omit) }}"
+        cidr: "{{ trove_service_net_subnet_cidr }}"
+        enable_dhcp: "{{ trove_service_net_dhcp }}"
+        project: "{{ keystone_admin_tenant_id }}"
+        wait: yes
+        endpoint_type: "{{ trove_service_net_endpoint_type }}"
+      register: subnet_create
+      run_once: true
   # Block end
   when: trove_service_net_setup
 
-- name: Get trove service net id
-  os_networks_facts:
-    cloud: default
-    validate_certs: "{{ trove_service_net_validate_certs }}"
-    wait: yes
-    name: "{{ trove_service_net_name }}"
-  run_once: true
+- name: Get the service nework ID
+  delegate_to: "{{ trove_service_setup_host }}"
+  vars:
+    ansible_python_interpreter: "{{ trove_service_setup_host_python_interpreter }}"
+  block:
+    - name: Get trove service net id
+      os_networks_facts:
+        cloud: default
+        validate_certs: "{{ trove_service_net_validate_certs }}"
+        wait: yes
+        name: "{{ trove_service_net_name }}"
+      run_once: true
 
-- name: Fail if trove service network is not available
-  fail:
-    msg: >
-      "Trove service network {{ trove_service_net_name }} is not available. "
-      "For Trove to operate properly it needs a network created to allocate "
-      "to the deployed VMs. This network can be created prior to running this"
-      " playbook or can be setup by setting trove_service_net_setup to true."
-  when:
-    - openstack_networks is not defined or openstack_networks | length == 0
+    - name: Fail if trove service network is not available
+      fail:
+        msg: >
+          "Trove service network {{ trove_service_net_name }} is not available. "
+          "For Trove to operate properly it needs a network created to allocate "
+          "to the deployed VMs. This network can be created prior to running this"
+          " playbook or can be setup by setting trove_service_net_setup to true."
+      when:
+        - openstack_networks is not defined or openstack_networks | length == 0
 
-- name: Save trove service net id
-  set_fact:
-    trove_service_net_id: "{% if openstack_networks is defined %}{{ openstack_networks[0].id }}{% else %}UNKNOWN{% endif %}"
-  run_once: true
+    - name: Save trove service net id
+      set_fact:
+        trove_service_net_id: "{% if openstack_networks is defined %}{{ openstack_networks[0].id }}{% else %}UNKNOWN{% endif %}"
+      run_once: true
