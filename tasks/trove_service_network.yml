@@ -20,15 +20,12 @@
     ansible_python_interpreter: "{{ trove_service_setup_host_python_interpreter }}"
   block:
     - name: Get admin tenant id
-      keystone:
-        command: get_tenant
-        tenant_name: admin
-        endpoint: "{{ keystone_service_adminurl }}"
-        login_user: "{{ keystone_admin_user_name }}"
-        login_password: "{{ keystone_auth_admin_password }}"
-        login_project_name: "{{ keystone_admin_tenant_name }}"
+      os_project_facts:
+        cloud: default
+        state: present
+        name: admin
+        interface: "{{ keystone_service_adminurl }}"
       no_log: True
-
     - name: Store admin tenant id
       set_fact:
         keystone_admin_tenant_id: "{{ keystone_facts.id }}"
