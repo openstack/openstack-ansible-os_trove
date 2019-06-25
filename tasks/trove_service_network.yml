@@ -22,13 +22,12 @@
     - name: Get admin tenant id
       os_project_facts:
         cloud: default
-        state: present
         name: admin
-        interface: "{{ keystone_service_adminurl }}"
-      no_log: True
+        interface: internal
+        validate_certs: "{{ not (keystone_service_internaluri_insecure | bool) }}"
     - name: Store admin tenant id
       set_fact:
-        keystone_admin_tenant_id: "{{ keystone_facts.id }}"
+        keystone_admin_tenant_id: "{{ ansible_facts.openstack_projects[0].id }}"
 
     - name: Create trove service network
       os_network:

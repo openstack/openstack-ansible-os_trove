@@ -26,22 +26,21 @@ trove_auth_url = {{ trove_auth_url }}
 os_region_name = {{ trove_service_region }}
 
 # Nova
-nova_compute_url = {{ trove_nova_compute_url }}
 nova_compute_service_type = compute
+nova_endpoint_type = internalURL
 nova_proxy_admin_user = {{ trove_service_user_name }}
 nova_proxy_admin_pass = {{ trove_service_password }}
 nova_proxy_admin_tenant_name = {{ trove_service_project_name }}
 
 # Cinder
-cinder_url = {{ trove_cinder_url }}
+cinder_endpoint_type = internalURL
 cinder_service_type = volumev2
 
 #Swift
-swift_url = {{ trove_swift_url }}
 swift_service_type = object-store
 
 # Neutron
-neutron_url = {{ trove_neutron_url }}
+neutron_endpoint_type = internalURL
 neutron_service_type = network
 network_driver = trove.network.neutron.NeutronDriver
 default_neutron_networks = {{ trove_service_net_id }}

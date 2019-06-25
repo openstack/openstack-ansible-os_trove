@@ -50,7 +50,6 @@ dns_endpoint_url = http://127.0.0.1/v1/
 dns_service_type = dns
 
 # Nova
-nova_compute_url = {{ trove_nova_compute_url }}
 nova_proxy_admin_user = {{ trove_service_user_name }}
 nova_proxy_admin_pass = {{ trove_service_password }}
 nova_proxy_admin_tenant_name = {{ trove_service_project_name }}
@@ -58,10 +57,8 @@ nova_proxy_admin_tenant_name = {{ trove_service_project_name }}
 # Neutron
 network_driver = trove.network.neutron.NeutronDriver
 default_neutron_networks = {{ trove_service_net_id }}
-neutron_url = {{ trove_neutron_url }}
 
 # Swift
-swift_url = {{ trove_swift_url }}
 swift_service_type = object-store
 
 # Taskmanager queue name
