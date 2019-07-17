@@ -35,7 +35,7 @@
   tags:
     - always
 
-- include_tasks: trove_pre_install.yml
+- import_tasks: trove_pre_install.yml
   tags:
     - trove-install
 
@@ -56,18 +56,18 @@
   tags:
     - trove-install
 
-- include_tasks: trove_service_network.yml
+- import_tasks: trove_service_network.yml
   tags:
     - trove-install
     - trove-config
 
-- include_tasks: trove_post_install.yml
+- import_tasks: trove_post_install.yml
   tags:
     - trove-install
     - trove-config
 
 - name: Run the systemd service role
-  include_role:
+  import_role:
     name: systemd_service
   vars:
     systemd_user_name: "{{ trove_system_user_name }}"
@@ -79,21 +79,29 @@
     systemd_BlockIOAccounting: true
     systemd_MemoryAccounting: true
     systemd_TasksAccounting: true
-    systemd_services:
-      - service_name: "{{ service_var.service_name }}"
-        enabled: yes
-        state: started
-        execstarts: "{{ service_var.execstarts }}"
-        execreloads: "{{ service_var.execreloads | default([]) }}"
-        config_overrides: "{{ service_var.init_config_overrides }}"
-  with_items: "{{ trove_services.values() | list }}"
-  loop_control:
-    loop_var: service_var
+    systemd_services: |-
+      {% set services = [] %}
+      {% for key, value in trove_services.items() %}
+      {%   if (value['group'] in group_names) %}
+      {%     set _ = value.update(
+              {
+                'service_key': key,
+                'enabled': 'yes',
+                'state': 'started',
+                'config_overrides': value.init_config_overrides
+              }
+            )
+      %}
+      {%     set _ = value.pop('init_config_overrides') -%}
+      {%     set _ = services.append(value) %}
+      {%   endif %}
+      {% endfor %}
+      {{ services }}
   tags:
     - trove-config
     - systemd-service
 
-- include_tasks: trove_service_setup.yml
+- import_tasks: trove_service_setup.yml
   when: inventory_hostname == groups['trove_api'][0]
   tags:
     - trove-install
@@ -117,12 +125,12 @@
     - common-mq
     - trove-config
 
-- include_tasks: trove_db_setup.yml
+- import_tasks: trove_db_setup.yml
   when: inventory_hostname == groups['trove_conductor'][0]
   tags:
     - trove-install
 
-- include_tasks: trove_apache.yml
+- import_tasks: trove_apache.yml
   when: trove_use_mod_wsgi | bool
   tags:
     - trove-install
