@@ -220,6 +220,7 @@ trove_pip_packages:
   - PyMySQL
   - python-troveclient
   - python-memcached
+  - systemd-python
   - trove
 
 trove_optional_oslomsg_amqp1_pip_packages:

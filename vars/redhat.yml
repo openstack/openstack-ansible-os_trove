@@ -21,4 +21,5 @@ trove_distro_packages:
   - httpd
   - httpd-tools
   - mod_wsgi
+  - systemd-devel
   - qemu-img

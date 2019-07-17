@@ -1,6 +1,7 @@
 # {{ ansible_managed }}
 [DEFAULT]
 debug = {{ debug }}
+use_journal = true
 bind_host = {{ trove_service_host }}
 bind_port = {{ trove_service_port }}
 trove_api_workers={{ trove_api_workers }}

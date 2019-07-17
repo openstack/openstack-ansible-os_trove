@@ -21,4 +21,5 @@ trove_distro_packages:
   - apache2
   - apache2-utils
   - libapache2-mod-wsgi
+  - libsystemd-dev
   - qemu-utils
