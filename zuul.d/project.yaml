@@ -16,18 +16,8 @@
     templates:
       - check-requirements
       - openstack-ansible-linters
+      - openstack-ansible-deploy-aio_metal-jobs
+      # NOTE: We need to have distro install support before enabling
+      # - openstack-ansible-deploy-aio_distro_metal-jobs
       - publish-openstack-docs-pti
       - release-notes-jobs-python3
-    check:
-      jobs:
-        - openstack-ansible-deploy-aio_metal_trove-centos-7
-        - openstack-ansible-deploy-aio_metal_trove-debian-stable
-        - openstack-ansible-deploy-aio_metal_trove-ubuntu-bionic
-    gate:
-      jobs:
-        - openstack-ansible-deploy-aio_metal_trove-centos-7
-        - openstack-ansible-deploy-aio_metal_trove-debian-stable
-        - openstack-ansible-deploy-aio_metal_trove-ubuntu-bionic
-    experimental:
-      jobs:
-        - openstack-ansible-deploy-aio_metal_trove-opensuse-150
