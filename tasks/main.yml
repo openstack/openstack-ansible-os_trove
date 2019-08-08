@@ -135,7 +135,36 @@
     - trove-config
     - systemd-service
 
-- import_tasks: trove_service_setup.yml
+- import_tasks: service_setup.yml
+  vars:
+    _project_name: "{{ trove_service_project_name }}"
+    _project_domain: "{{ trove_service_project_domain_id }}"
+    _project_description: "{{ trove_service_description }}"
+    _service_adminuri_insecure: "{{ keystone_service_adminuri_insecure }}"
+    _service_setup_host: "{{ trove_service_setup_host }}"
+    _service_setup_host_python_interpreter: "{{ trove_service_setup_host_python_interpreter }}"
+    _service_project_name: "{{ trove_service_project_name }}"
+    _service_region: "{{ trove_service_region }}"
+    _service_users: |-
+      {% set users = [{'name': trove_admin_user_name, 'password': trove_service_password}] %}
+      {% for role in trove_service_admin_role_names %}
+      {%   set _ = users.append({'name': trove_admin_user_name, 'role': role}) %}
+      {% endfor %}
+      {{ users }}
+    _service_endpoints:
+      - service: "{{ trove_service_name }}"
+        interface: "public"
+        url: "{{ trove_service_publicurl }}"
+      - service: "{{ trove_service_name }}"
+        interface: "internal"
+        url: "{{ trove_service_internalurl }}"
+      - service: "{{ trove_service_name }}"
+        interface: "admin"
+        url: "{{ trove_service_adminurl }}"
+    _service_catalog:
+      - name: "{{ trove_service_name }}"
+        type: "{{ trove_service_type }}"
+        description: "{{ trove_service_description }}"
   when: inventory_hostname == groups['trove_api'][0]
   tags:
     - trove-install
