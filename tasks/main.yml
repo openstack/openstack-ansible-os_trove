@@ -174,8 +174,5 @@
   tags:
     - trove-install
 
-- import_tasks: trove_apache.yml
-  when: trove_use_mod_wsgi | bool
-  tags:
-    - trove-install
-    - trove-config
+- name: Flush handlers
+  meta: flush_handlers

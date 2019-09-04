@@ -38,7 +38,6 @@
       config_overrides: "{{ trove_policy_overrides }}"
       config_type: "json"
   notify:
-    - Restart Apache
     - Restart trove API services
   when: inventory_hostname in groups['trove_api']
 
@@ -89,16 +88,3 @@
   notify:
     - Restart trove taskmanager service
   when: inventory_hostname in groups['trove_taskmanager']
-
-- name: Drop trove WSGI Configs
-  template:
-    src: trove-wsgi.py.j2
-    dest: /var/www/cgi-bin/trove/trove-api
-    owner: "{{ trove_system_user_name }}"
-    group: "{{ trove_system_group_name }}"
-    mode: "0755"
-  when:
-    - trove_use_mod_wsgi | bool
-    - inventory_hostname in groups['trove_api']
-  notify:
-    - Restart Apache

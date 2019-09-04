@@ -83,30 +83,6 @@ trove_git_constraints:
   - "git+{{ trove_git_repo }}@{{ trove_git_install_branch }}#egg=trove"
   - "--constraint {{ trove_upper_constraints_url }}"
 
-#: Set this to false to disable API service through Apache + mod_wsgi
-trove_use_mod_wsgi: false
-
-## Apache setup
-trove_apache_log_level: info
-trove_apache_servertokens: "Prod"
-trove_apache_serversignature: "Off"
-trove_wsgi_threads: 1
-## Cap the maximum number of processes when a user value is unspecified.
-trove_wsgi_processes_max: 32
-trove_wsgi_processes: "{{ [[ansible_processor_vcpus|default(1), 1] | max * 2, trove_wsgi_processes_max] | min }}"
-
-# set trove_ssl to true to enable SSL configuration on the trove containers
-trove_ssl: false
-trove_ssl_cert: /etc/ssl/certs/trove.pem
-trove_ssl_key: /etc/ssl/private/trove.key
-trove_ssl_ca_cert: /etc/ssl/certs/trove-ca.pem
-trove_ssl_protocol: "{{ ssl_protocol | default('ALL -SSLv2 -SSLv3 -TLSv1.0 -TLSv1.1') }}"
-trove_ssl_cipher_suite: "{{ ssl_cipher_suite | default('ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:RSA+AESGCM:RSA+AES:!aNULL:!MD5:!DSS') }}"
-
-# if using a self-signed certificate, set this to true to regenerate it
-trove_ssl_self_signed_regen: false
-trove_ssl_self_signed_subject: "/C=US/ST=Texas/L=San Antonio/O=IT/CN={{ internal_lb_vip_address }}/subjectAltName=IP.1={{ external_lb_vip_address }}"
-
 # Database vars
 trove_db_setup_host: "{{ ('galera_all' in groups) | ternary(groups['galera_all'][0], 'localhost') }}"
 trove_galera_address: "{{ galera_address | default('127.0.0.1') }}"
