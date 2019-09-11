@@ -17,6 +17,9 @@
 # (c) 2016 Donovan Francesco <donovan.francesco@is.co.za>
 # (c) 2016 Paul Stevens <paul.stevens@is.co.za>
 
+#python venv executable
+trove_venv_python_executable: "{{ openstack_venv_python_executable | default('python2') }}"
+
 # Set the host which will execute the shade modules
 # for the service setup. The host must already have
 # clouds.yaml properly configured.
