@@ -63,7 +63,7 @@
   # Block end
   when: trove_service_net_setup
 
-- name: Get the service nework ID
+- name: Get the service network ID
   delegate_to: "{{ trove_service_setup_host }}"
   vars:
     ansible_python_interpreter: "{{ trove_service_setup_host_python_interpreter }}"
