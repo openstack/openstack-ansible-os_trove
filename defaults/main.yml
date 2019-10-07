@@ -49,7 +49,7 @@ trove_service_project_name: "{{ trove_service_tenant_name }}"
 trove_service_admin_role_names:
   - admin
 trove_service_region: RegionOne
-trove_service_host: "0.0.0.0"
+trove_service_host: "{{ openstack_service_bind_address | default('0.0.0.0') }}"
 trove_service_port: 8779
 trove_service_proto: http
 trove_service_publicuri_proto: "{{ openstack_service_publicuri_proto | default(trove_service_proto) }}"
