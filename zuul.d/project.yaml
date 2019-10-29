@@ -30,4 +30,4 @@
         - openstack-ansible-deploy-aio_metal_trove-ubuntu-bionic
     experimental:
       jobs:
-        - openstack-ansible-deploy-aio_metal_trove-opensuse-150
+        - openstack-ansible-deploy-aio_metal_trove-opensuse-15
