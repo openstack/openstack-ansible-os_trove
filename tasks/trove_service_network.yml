@@ -78,6 +78,7 @@
         validate_certs: "{{ trove_service_net_validate_certs }}"
         wait: yes
         name: "{{ trove_service_net_name }}"
+        endpoint_type: "{{ trove_service_net_endpoint_type }}"
       run_once: true
 
     - name: Fail if trove service network is not available
