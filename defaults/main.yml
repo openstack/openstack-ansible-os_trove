@@ -79,9 +79,9 @@ trove_pip_install_args: "{{ pip_install_options | default('') }}"
 trove_venv_tag: "{{ venv_tag | default('untagged') }}"
 trove_bin: "/openstack/venvs/trove-{{ trove_venv_tag }}/bin"
 
-trove_git_repo: "https://git.openstack.org/openstack/trove"
+trove_git_repo: "https://opendev.org/openstack/trove"
 trove_git_install_branch: master
-trove_upper_constraints_url: "{{ requirements_git_url | default('https://git.openstack.org/cgit/openstack/requirements/plain/upper-constraints.txt?h=' ~ requirements_git_install_branch | default('master')) }}"
+trove_upper_constraints_url: "{{ requirements_git_url | default('https://releases.openstack.org/constraints/upper/' ~ requirements_git_install_branch | default('master')) }}"
 trove_git_constraints:
   - "git+{{ trove_git_repo }}@{{ trove_git_install_branch }}#egg=trove"
   - "--constraint {{ trove_upper_constraints_url }}"

@@ -33,7 +33,7 @@ tempest_run: yes
 
 tempest_plugins:
   - name: trove
-    repo: https://git.openstack.org/openstack/trove-tempest-plugin
+    repo: https://opendev.org/openstack/trove-tempest-plugin
     branch: master
 
 tempest_test_whitelist:
