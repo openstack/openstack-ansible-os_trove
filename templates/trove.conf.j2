@@ -92,7 +92,7 @@ username = {{ trove_service_user_name }}
 password = {{ trove_service_password }}
 region_name = {{ keystone_service_region }}
 
-memcached_servers = {{ memcached_servers }}
+memcached_servers = {{ trove_memcached_servers }}
 token_cache_time = 300
 
 # if your memcached server is shared, use these settings to avoid cache poisoning

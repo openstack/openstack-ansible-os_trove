@@ -197,10 +197,14 @@ trove_pip_packages:
   - osprofiler
   - pexpect
   - PyMySQL
+  - pymemcache
   - python-troveclient
   - python-memcached
   - systemd-python
   - trove
+
+# Memcached override
+trove_memcached_servers: "{{ memcached_servers }}"
 
 trove_optional_oslomsg_amqp1_pip_packages:
   - oslo.messaging[amqp1]
