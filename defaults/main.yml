@@ -243,3 +243,6 @@ trove_services:
     execstarts: "{{ trove_bin }}/trove-taskmanager"
     init_config_overrides: "{{ trove_taskmanager_init_config_overrides }}"
     start_order: 3
+
+_trove_is_first_play_host: "{{ (trove_services['trove-api']['group'] in group_names and inventory_hostname == (groups[trove_services['trove-api']['group']] | intersect(ansible_play_hosts)) | first) | bool }}"
+_trove_conductor_is_first_play_host: "{{ (trove_services['trove-conductor']['group'] in group_names and inventory_hostname == (groups[trove_services['trove-conductor']['group']] | intersect(ansible_play_hosts)) | first) | bool }}"

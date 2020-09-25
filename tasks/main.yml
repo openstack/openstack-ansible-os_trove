@@ -37,8 +37,7 @@
 
 - import_tasks: db_setup.yml
   when:
-    - "trove_services['trove-api']['group'] in group_names"
-    - "inventory_hostname == ((groups[trove_services['trove-api']['group']]| intersect(ansible_play_hosts)) | list)[0]"
+    - _trove_is_first_play_host
   vars:
     _oslodb_setup_host: "{{ trove_db_setup_host }}"
     _oslodb_ansible_python_interpreter: "{{ trove_db_setup_python_interpreter }}"
@@ -55,8 +54,7 @@
 
 - import_tasks: mq_setup.yml
   when:
-    - "trove_services['trove-api']['group'] in group_names"
-    - "inventory_hostname == ((groups[trove_services['trove-api']['group']]| intersect(ansible_play_hosts)) | list)[0]"
+    - _trove_is_first_play_host
   vars:
     _oslomsg_rpc_setup_host: "{{ trove_oslomsg_rpc_setup_host }}"
     _oslomsg_rpc_userid: "{{ trove_oslomsg_rpc_userid }}"
@@ -169,12 +167,12 @@
       - name: "{{ trove_service_name }}"
         type: "{{ trove_service_type }}"
         description: "{{ trove_service_description }}"
-  when: inventory_hostname == groups['trove_api'][0]
+  when: _trove_is_first_play_host
   tags:
     - trove-install
 
 - import_tasks: trove_db_sync.yml
-  when: inventory_hostname == groups['trove_conductor'][0]
+  when: _trove_conductor_is_first_play_host
   tags:
     - trove-install
 
