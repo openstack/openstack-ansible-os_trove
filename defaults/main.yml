@@ -64,11 +64,11 @@ trove_profiler_enabled: false
 
 ## Cap the maximum number of threads / workers when a user value is unspecified.
 trove_api_workers_max: 16
-trove_api_workers: "{{ [[ansible_processor_vcpus|default(2) // 2, 1] | max, trove_api_workers_max] | min }}"
+trove_api_workers: "{{ [[(ansible_processor_vcpus//ansible_processor_threads_per_core)|default(1), 1] | max * 2, trove_api_workers_max] | min }}"
 
 ## Cap the maximum number of threads / workers when a user value is unspecified.
 trove_conductor_workers_max: 16
-trove_conductor_workers: "{{ [[ansible_processor_vcpus|default(2) // 2, 1] | max, trove_conductor_workers_max] | min }}"
+trove_conductor_workers: "{{ [[(ansible_processor_vcpus//ansible_processor_threads_per_core)|default(1), 1] | max * 2, trove_conductor_workers_max] | min }}"
 
 # Enable/Disable Ceilometer
 trove_ceilometer_enabled: False
