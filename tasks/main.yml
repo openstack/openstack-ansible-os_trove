@@ -145,6 +145,7 @@
     _service_adminuri_insecure: "{{ keystone_service_adminuri_insecure }}"
     _service_setup_host: "{{ trove_service_setup_host }}"
     _service_setup_host_python_interpreter: "{{ trove_service_setup_host_python_interpreter }}"
+    _service_in_ldap: "{{ trove_service_in_ldap }}"
     _service_project_name: "{{ trove_service_project_name }}"
     _service_region: "{{ trove_service_region }}"
     _service_users: |-
