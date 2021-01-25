@@ -84,7 +84,6 @@ trove_git_repo: "https://opendev.org/openstack/trove"
 trove_git_install_branch: master
 trove_upper_constraints_url: "{{ requirements_git_url | default('https://releases.openstack.org/constraints/upper/' ~ requirements_git_install_branch | default('master')) }}"
 trove_git_constraints:
-  - "git+{{ trove_git_repo }}@{{ trove_git_install_branch }}#egg=trove"
   - "--constraint {{ trove_upper_constraints_url }}"
 
 # Database vars
@@ -204,7 +203,7 @@ trove_pip_packages:
   - python-troveclient
   - python-memcached
   - systemd-python
-  - trove
+  - "git+{{ trove_git_repo }}@{{ trove_git_install_branch }}#egg=trove"
 
 # Memcached override
 trove_memcached_servers: "{{ memcached_servers }}"
