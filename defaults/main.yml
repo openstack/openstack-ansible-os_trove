@@ -18,7 +18,7 @@
 # (c) 2016 Paul Stevens <paul.stevens@is.co.za>
 
 #python venv executable
-trove_venv_python_executable: "{{ openstack_venv_python_executable | default('python2') }}"
+trove_venv_python_executable: "{{ openstack_venv_python_executable | default('python3') }}"
 
 # Set the host which will execute the shade modules
 # for the service setup. The host must already have
