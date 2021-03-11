@@ -9,14 +9,14 @@ galaxy_info:
   platforms:
   - name: Debian
     versions:
-    - stretch
+    - buster
   - name: Ubuntu
     versions:
-    - xenial
-    - bionic
+      - bionic
+      - focal
   - name: EL
     versions:
-    - 7
+      - 8
   galaxy_tags:
    - cloud
    - openstack
