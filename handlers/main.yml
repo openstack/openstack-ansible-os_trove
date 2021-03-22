@@ -38,3 +38,12 @@
   listen:
     - "Restart trove services"
     - "venv changed"
+
+# NOTE (noonedeadpunk): Remove this task after Xena release
+- name: Remove obsoleted policy.json
+  file:
+    path: "/etc/trove/policy.json"
+    state: absent
+  listen:
+    - "Restart trove services"
+    - "venv changed"

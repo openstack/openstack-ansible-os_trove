@@ -33,13 +33,31 @@
       dest: "/etc/trove/trove.conf"
       config_overrides: "{{ trove_config_overrides }}"
       config_type: "ini"
-    - src: "policy.json.j2"
-      dest: "/etc/trove/policy.json"
-      config_overrides: "{{ trove_policy_overrides }}"
-      config_type: "json"
   notify:
     - Restart trove API services
   when: inventory_hostname in groups['trove_api']
+
+- name: Implement policy.yaml if there are overrides configured
+  config_template:
+    content: "{{ trove_policy_overrides }}"
+    dest: "/etc/trove/policy.yaml"
+    owner: "{{ trove_system_user_name }}"
+    group: "{{ trove_system_group_name }}"
+    mode: "0644"
+    config_type: yaml
+  when:
+    - trove_policy_overrides | length > 0
+  tags:
+    - trove-policy-override
+
+- name: Remove legacy policy.yaml file
+  file:
+    path: "/etc/trove/policy.yaml"
+    state: absent
+  when:
+    - trove_policy_overrides | length == 0
+  tags:
+    - trove-policy-override
 
 - name: Drop trove-conductor Config(s)
   config_template:
