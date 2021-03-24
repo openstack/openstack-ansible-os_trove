@@ -43,6 +43,10 @@
         project: "{{ keystone_admin_tenant_id }}"
         wait: yes
         endpoint_type: "{{ trove_service_net_endpoint_type }}"
+      register: trove_network
+      until: trove_network is success
+      retries: 5
+      delay: 2
       run_once: true
 
     - name: Create trove service subnet
@@ -60,6 +64,9 @@
         wait: yes
         endpoint_type: "{{ trove_service_net_endpoint_type }}"
       register: subnet_create
+      until: subnet_create is success
+      retries: 5
+      delay: 2
       run_once: true
   # Block end
   when: trove_service_net_setup
