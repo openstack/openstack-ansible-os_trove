@@ -179,11 +179,11 @@ trove_service_net_type: flat
 trove_service_net_name: dbaas_service_net
 # Network segmentation ID if vlan, gre...
 # trove_service_net_segmentation_id:
-trove_service_subnet_name: dbaas_service_subnet
-trove_service_net_subnet_cidr: "192.168.20.0/24"
+trove_service_subnet_name: dbaas_subnet
+trove_service_net_subnet_cidr: "172.29.252.0/22"
 trove_service_net_dhcp: "True"
-trove_service_net_allocation_pool_start: "192.168.20.100"
-trove_service_net_allocation_pool_end: "192.168.20.120"
+trove_service_net_allocation_pool_start: "172.29.252.110"
+trove_service_net_allocation_pool_end: "172.29.255.254"
 trove_service_net_endpoint_type: internal
 
 # RPC encryption keys
