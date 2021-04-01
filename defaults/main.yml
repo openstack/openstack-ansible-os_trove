@@ -67,6 +67,10 @@ trove_profiler_enabled: false
 trove_api_workers_max: 16
 trove_api_workers: "{{ [[(ansible_facts['processor_vcpus']//ansible_facts['processor_threads_per_core'])|default(1), 1] | max * 2, trove_api_workers_max] | min }}"
 
+# uWSGI settings
+trove_wsgi_threads: 1
+trove_use_uwsgi: True
+
 ## Cap the maximum number of threads / workers when a user value is unspecified.
 trove_conductor_workers_max: 16
 trove_conductor_workers: "{{ [[(ansible_facts['processor_vcpus']//ansible_facts['processor_threads_per_core'])|default(1), 1] | max * 2, trove_conductor_workers_max] | min }}"
@@ -235,8 +239,8 @@ trove_conductor_config_overrides: {}
 trove_taskmanager_config_overrides: {}
 trove_guestagent_config_overrides: {}
 trove_policy_overrides: {}
-
 trove_api_init_config_overrides: {}
+trove_api_uwsgi_ini_overrides: {}
 trove_conductor_init_config_overrides: {}
 trove_taskmanager_init_config_overrides: {}
 
@@ -247,6 +251,11 @@ trove_services:
     service_name: trove-api
     execstarts: "{{ trove_bin }}/trove-api"
     init_config_overrides: "{{ trove_api_init_config_overrides }}"
+    wsgi_app: "{{ trove_use_uwsgi }}"
+    wsgi_name: trove-api-wsgi
+    uwsgi_overrides: "{{ trove_api_uwsgi_ini_overrides }}"
+    uwsgi_bind_address: "{{ trove_service_host }}"
+    uwsgi_port: "{{ trove_service_port }}"
     start_order: 1
   trove-conductor:
     group: trove_conductor
@@ -260,6 +269,3 @@ trove_services:
     execstarts: "{{ trove_bin }}/trove-taskmanager"
     init_config_overrides: "{{ trove_taskmanager_init_config_overrides }}"
     start_order: 3
-
-_trove_is_first_play_host: "{{ (trove_services['trove-api']['group'] in group_names and inventory_hostname == (groups[trove_services['trove-api']['group']] | intersect(ansible_play_hosts)) | first) | bool }}"
-_trove_conductor_is_first_play_host: "{{ (trove_services['trove-conductor']['group'] in group_names and inventory_hostname == (groups[trove_services['trove-conductor']['group']] | intersect(ansible_play_hosts)) | first) | bool }}"

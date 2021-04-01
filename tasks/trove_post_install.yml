@@ -35,6 +35,7 @@
       config_type: "ini"
   notify:
     - Restart trove API services
+    - Restart uwsgi services
   when: inventory_hostname in groups['trove_api']
 
 - name: Implement policy.yaml if there are overrides configured
@@ -58,6 +59,20 @@
     - trove_policy_overrides | length == 0
   tags:
     - trove-policy-override
+
+- name: Drop trove wsgi binary
+  template:
+    src: wsgi.py.j2
+    dest: "{{ trove_bin }}/trove-api-wsgi"
+    owner: "{{ trove_system_user_name }}"
+    group: "{{ trove_system_group_name }}"
+    mode: "0755"
+  when:
+    - trove_use_uwsgi | bool
+    - inventory_hostname in groups['trove_api']
+  notify:
+    - Restart trove API services
+    - Restart uwsgi services
 
 - name: Drop trove-conductor Config(s)
   config_template:
