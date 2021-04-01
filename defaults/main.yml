@@ -152,6 +152,23 @@ trove_guest_oslomsg_notify_use_ssl: "{{ oslomsg_notify_use_ssl | default(False) 
 trove_guest_auth_url: "{{ keystone_service_publicurl }}"
 trove_guest_swift_url: "{{ trove_service_publicuri_proto }}://{{ external_lb_vip_address }}:{{ swift_proxy_port }}/v1/AUTH_"
 
+# Trove image settings.
+# Set the directory where the downloaded images will be stored
+# on the trove_service_setup_host host. If the host is localhost,
+# then the user running the playbook must have access to it.
+trove_image_local_path: "{{ lookup('env', 'HOME') }}/openstack-ansible/trove"
+trove_image_path_owner: "{{ lookup('env', 'USER') }}"
+## Example Glance Image - Fedora Atomic
+#  - name: ubuntu-bionic                #Name of the image in Glance
+#    disk_format: qcow2                 #Disk format (e.g. qcow2)
+#    image_format: bare                 #Image format
+#    public: true                       #Boolean - is the image public
+#    file: https://tarballs.opendev.org/openstack/trove/images/trove-master-guest-ubuntu-bionic.qcow2
+#    tags:
+#      - trove
+#    checksum: "sha256:9a5252e24b82a5edb1ce75b05653f59895685b0f1028112462e908a12deae518"
+trove_guestagent_images: []
+
 # Trove service network settings.
 # These values are used when creating an OpenStack network to be used by Trove. By default the network will
 # not be created.

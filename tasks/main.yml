@@ -97,6 +97,12 @@
     - trove-install
     - trove-config
 
+- include_tasks: trove_guest_image.yml
+  when: trove_guestagent_images | length > 0
+  tags:
+    - trove-install
+    - trove-config
+
 - import_tasks: trove_post_install.yml
   tags:
     - trove-install
