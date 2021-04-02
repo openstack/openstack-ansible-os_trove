@@ -158,9 +158,9 @@
     _service_project_name: "{{ trove_service_project_name }}"
     _service_region: "{{ trove_service_region }}"
     _service_users: |-
-      {% set users = [{'name': trove_admin_user_name, 'password': trove_service_password}] %}
+      {% set users = [{'name': trove_service_user_name, 'password': trove_service_password}] %}
       {% for role in trove_service_admin_role_names %}
-      {%   set _ = users.append({'name': trove_admin_user_name, 'role': role}) %}
+      {%   set _ = users.append({'name': trove_service_user_name, 'role': role}) %}
       {% endfor %}
       {{ users }}
     _service_endpoints:

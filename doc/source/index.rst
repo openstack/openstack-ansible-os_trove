@@ -37,6 +37,7 @@ To use this role, define the following variables:
     # Trove RPC encryption keys.
     trove_taskmanager_rpc_encr_key:
     trove_inst_rpc_key_encr_key:
+    trove_instance_rpc_encr_key:
 
 This list is not exhaustive at present. See role internals for further
 details.
