@@ -39,14 +39,15 @@ An example entry into ``openstack_user_config.yml`` is shown below:
      - network:
         container_bridge: "br-dbaas"
         container_type: "veth"
-        container_interface: "eth14"
-        host_bind_override: "eth14"
+        container_interface: "eth13"
+        host_bind_override: "eth13"
         ip_from_q: "dbaas"
         type: "flat"
         net_name: "dbaas-mgmt"
         group_binds:
           - neutron_linuxbridge_agent
           - oslomsg_rpc
+          - trove_all
 
 Make sure to modify the other entries in this file as well.
 
@@ -71,9 +72,9 @@ manually, if so desired:
                                     --provider:network_type flat \
                                     --provider:physical_network dbaas-mgmt
 
-    neutron subnet-create dbaas_service_net 172.19.0.0/22 --name dbaas_service_subnet
+    neutron subnet-create dbaas_service_net 172.29.252.0/22 --name dbaas_service_subnet
                           --ip-version=4 \
-                          --allocation-pool start=172.19.1.100,end=172.19.1.200 \
+                          --allocation-pool start=172.29.252.110,end=172.29.255.255 \
                           --enable-dhcp \
                           --dns-nameservers list=true 8.8.4.4 8.8.8.8
 
