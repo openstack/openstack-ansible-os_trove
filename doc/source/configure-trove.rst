@@ -105,3 +105,95 @@ the images using custom ``diskimage-builder`` elements.
 See the ``trove/integration/scripts/files/elements`` directory contents in
 the OpenStack Trove project for ``diskimage-builder`` elements to build trove
 disk images.
+
+
+Use stand-alone RabbitMQ
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Since Trove uses RabbitMQ to interact with guest servers it requires you to
+pass the neutron network into the RabbitMQ container which is a security risk.
+As a result, you might want to isolate Trove from other services in terms of
+the RabbitMQ cluster and use a standalone one.
+
+In order to deploy new RabbitMQ cluster and use it for Trove, you will need
+to:
+
+#. Create a new group for RabbitMQ containers. You will need to create a file
+   inside ``/etc/openstack_depoy/env.d`` which defines group mappings
+
+    .. code-block:: yaml
+
+        component_skel:
+          trove_rabbitmq:
+            belongs_to:
+              - trove_mq_all
+
+        container_skel:
+          trove_rabbit_container:
+            belongs_to:
+              - trove-mq_containers
+            contains:
+              - trove_rabbitmq
+
+        physical_skel:
+          trove-mq_containers:
+            belongs_to:
+              - all_containers
+          trove-mq_hosts:
+            belongs_to:
+              - hosts
+
+#. Define on which hosts this group will be deployed. This can be done either
+   with a new file in conf.d or inside openstack_user_config.yml
+
+    .. code-block:: yaml
+
+        trove-mq_hosts:
+          aio1:
+            ip: 172.29.236.100
+
+#. Add to the dbaas network mapping for the new group:
+
+.. code-block:: yaml
+
+     - network:
+        container_bridge: "br-dbaas"
+        container_type: "veth"
+        container_interface: "eth14"
+        host_bind_override: "eth14"
+        ip_from_q: "dbaas"
+        type: "flat"
+        net_name: "dbaas-mgmt"
+        group_binds:
+          - neutron_linuxbridge_agent
+          - oslomsg_rpc
+          - trove_rabbitmq
+
+#. Create overrides for dedicated rabbitmq containers, ie
+   ``/etc/openstack_deploy/group_vars/trove_rabbitmq.yml``
+
+    .. code-block:: yaml
+
+        rabbitmq_cluster_name: trove
+        rabbitmq_cookie_token: <token>
+        rabbitmq_monitoring_password: <password>
+
+#. Create overrides for trove service contaienrs, ie
+   ``/etc/openstack_deploy/group_vars/trove_all.yml``
+
+    .. note::
+
+        For notifications we still want to use main RabbitMQ cluster
+
+    .. code-block:: yaml
+
+        oslomsg_rpc_host_group: trove_rabbitmq
+        oslomsg_rpc_servers: "{{ groups[oslomsg_rpc_host_group] | map('extract', hostvars, 'ansible_host') | list | join(',') }}"
+        trove_guest_oslomsg_notify_servers: "{{ rabbitmq_servers }}"
+
+#. Run playbooks to create rabbitmq containers and deploy cluster on them
+
+    .. code-block:: bash
+
+        openstack-ansible playbooks/lxc-containers-create.yml --limit trove_rabbitmq,lxc_hosts
+        openstack-ansible playbooks/rabbitmq-install.yml -e rabbitmq_host_group=trove_rabbitmq
