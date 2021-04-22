@@ -15,6 +15,16 @@
 #
 # (c) 2016 Donovan Francesco <donovan.francesco@is.co.za>
 # (c) 2016 Paul Stevens <paul.stevens@is.co.za>
+
+- name: Gathering network facts for {{ trove_provider_net_name }} interface
+  setup:
+    gather_subset: "!all,network"
+    filter: "{{ trove_address_gather_filter | default('ansible_' ~ trove_provider_net_iface | replace('-','_')) }}"
+  delegate_to: "{{ item }}"
+  delegate_facts: true
+  with_items: "{{ (groups[trove_guest_rpc_host_group] + groups[trove_guest_notify_host_group]) | unique }}"
+  run_once: true
+
 - name: Drop trove api Config(s)
   config_template:
     src: "{{ item.src }}"
@@ -33,10 +43,13 @@
       dest: "/etc/trove/trove.conf"
       config_overrides: "{{ trove_config_overrides }}"
       config_type: "ini"
+    - src: "trove-guestagent.conf.j2"
+      dest: "/etc/trove/trove-guestagent.conf"
+      config_overrides: "{{ trove_guestagent_config_overrides }}"
+      config_type: "ini"
   notify:
-    - Restart trove API services
+    - Restart trove services
     - Restart uwsgi services
-  when: inventory_hostname in groups['trove_api']
 
 - name: Implement policy.yaml if there are overrides configured
   config_template:
@@ -71,53 +84,4 @@
     - trove_use_uwsgi | bool
     - inventory_hostname in groups['trove_api']
   notify:
-    - Restart trove API services
     - Restart uwsgi services
-
-- name: Drop trove-conductor Config(s)
-  config_template:
-    src: "{{ item.src }}"
-    dest: "{{ item.dest }}"
-    owner: "{{ trove_system_user_name }}"
-    group: "{{ trove_system_group_name }}"
-    mode: "0644"
-    config_overrides: "{{ item.config_overrides }}"
-    config_type: "{{ item.config_type }}"
-  with_items:
-    - src: "api-paste.ini.j2"
-      dest: "/etc/trove/api-paste.ini"
-      config_overrides: "{{ trove_api_paste_ini_overrides }}"
-      config_type: "ini"
-    - src: "trove-conductor.conf.j2"
-      dest: "/etc/trove/trove-conductor.conf"
-      config_overrides: "{{ trove_conductor_config_overrides }}"
-      config_type: "ini"
-  notify:
-    - Restart trove conductor service
-  when: inventory_hostname in groups['trove_conductor']
-
-- name: Drop trove-taskmanager Config(s)
-  config_template:
-    src: "{{ item.src }}"
-    dest: "{{ item.dest }}"
-    owner: "{{ trove_system_user_name }}"
-    group: "{{ trove_system_group_name }}"
-    mode: "0644"
-    config_overrides: "{{ item.config_overrides }}"
-    config_type: "{{ item.config_type }}"
-  with_items:
-    - src: "api-paste.ini.j2"
-      dest: "/etc/trove/api-paste.ini"
-      config_overrides: "{{ trove_api_paste_ini_overrides }}"
-      config_type: "ini"
-    - src: "trove-taskmanager.conf.j2"
-      dest: "/etc/trove/trove-taskmanager.conf"
-      config_overrides: "{{ trove_taskmanager_config_overrides }}"
-      config_type: "ini"
-    - src: "trove-guestagent.conf.j2"
-      dest: "/etc/trove/trove-guestagent.conf"
-      config_overrides: "{{ trove_guestagent_config_overrides }}"
-      config_type: "ini"
-  notify:
-    - Restart trove taskmanager service
-  when: inventory_hostname in groups['trove_taskmanager']

@@ -2,9 +2,17 @@
 [DEFAULT]
 debug = {{ debug }}
 use_journal = true
+
+{% if trove_use_uwsgi | bool %}
 bind_host = {{ trove_service_host }}
 bind_port = {{ trove_service_port }}
 trove_api_workers={{ trove_api_workers }}
+{% endif %}
+
+trove_conductor_workers={{ trove_conductor_workers }}
+
+taskmanager_manager = trove.taskmanager.manager.Manager
+
 transport_url = {{ trove_oslomsg_rpc_transport }}://{% for host in trove_oslomsg_rpc_servers.split(',') %}{{ trove_oslomsg_rpc_userid }}:{{ trove_oslomsg_rpc_password }}@{{ host }}:{{ trove_oslomsg_rpc_port }}{% if not loop.last %},{% else %}/{{ trove_oslomsg_rpc_vhost }}{% endif %}{% endfor %}
 
 {# There must be a blank line above or the following line will be appended to the previous. #}
@@ -12,73 +20,59 @@ control_exchange = {{ trove_control_exchange }}
 enable_secure_rpc_messaging = {{ trove_enable_secure_rpc_messaging }}
 inst_rpc_key_encr_key = {{ trove_inst_rpc_key_encr_key }}
 taskmanager_rpc_encr_key = {{ trove_taskmanager_rpc_encr_key }}
+instance_rpc_encr_key = {{ trove_instance_rpc_encr_key }}
 
-db_api_implementation = "trove.db.sqlalchemy.api"
-trove_auth_url = {{ trove_auth_url }}
-os_region_name = {{ trove_service_region }}
-network_label_regex = .*
-#network_label_regex = .* //with neutron enabled
-#ip_regex = ^(15.|123.)
-#black_list_regex = ^10.0.0.
-trove_volume_support = True
-block_device_mapping = vdb
-device_path = /dev/vdb
-max_accepted_volume_size = 10
-max_instances_per_tenant = 5
-max_volumes_per_tenant = 100
-max_backups_per_tenant = 5
-volume_time_out=30
+nova_compute_endpoint_type = {{ trove_service_nova_endpoint_type }}
+nova_compute_service_type = compute
 
-# Config options for rate limits
-http_get_rate = 200
-http_post_rate = 200
-http_put_rate = 200
-http_delete_rate = 200
-http_mgmt_post_rate = 200
+glance_endpoint_type = {{ trove_service_glance_endpoint_type }}
+trove_endpoint_type = {{ trove_service_endpoint_type }}
+
+# Cinder
+trove_volume_support = {{ trove_cinder_enabled }}
+max_accepted_volume_size = 100
+max_volumes_per_tenant = 1000
+cinder_endpoint_type = {{ trove_service_cinder_endpoint_type }}
+cinder_service_type = volumev3
 
 # Trove DNS
-trove_dns_support = False
-dns_account_id = 123456
-dns_auth_url = http://127.0.0.1:5000/v2.0
-dns_username = user
-dns_passkey = password
+trove_dns_support = {{ trove_designate_enabled | bool }}
+{% if trove_designate_enabled | bool %}
+dns_account_id = {{ trove_service_project_name }}
+dns_auth_url = {{ trove_auth_url }}
+dns_username = {{ trove_service_user_name }}
+dns_passkey = {{ trove_service_password }}
+dns_region = {{ keystone_service_region }}
+dns_user_domain_id = {{ trove_service_user_domain_id }}
+dns_project_domain_id = {{ trove_service_project_domain_id }}
 dns_ttl = 3600
-dns_domain_name = 'trove.com.'
-dns_domain_id = 11111111-1111-1111-1111-111111111111
+dns_domain_name = {{ trove_dns_domain_name }}
+dns_domain_id = {{ trove_dns_domain_id }}
 dns_driver = trove.dns.designate.driver.DesignateDriver
 dns_instance_entry_factory = trove.dns.designate.driver.DesignateInstanceEntryFactory
-dns_endpoint_url = http://127.0.0.1/v1/
 dns_service_type = dns
-
-# Nova
-nova_proxy_admin_user = {{ trove_service_user_name }}
-nova_proxy_admin_pass = {{ trove_service_password }}
-nova_proxy_admin_tenant_name = {{ trove_service_project_name }}
+{% endif %}
 
 # Neutron
 network_driver = trove.network.neutron.NeutronDriver
-default_neutron_networks = {{ trove_service_net_id }}
+management_networks = {{ trove_service_net_id }}
+neutron_endpoint_type = {{ trove_service_neutron_endpoint_type }}
+neutron_service_type = network
 
+{% if trove_management_security_groups | length > 0 %}
+management_security_groups = {{ trove_management_security_groups | join(',') }}
+{% endif %}
+
+{% if trove_swift_enabled is defined %}
 # Swift
 swift_service_type = object-store
-
-# Taskmanager queue name
-taskmanager_queue = taskmanager
-
-# Auth
-admin_roles = admin
-auth_strategy = keystone
+swift_endpoint_type = {{ trove_service_swift_endpoint_type }}
+{% endif %}
 
 # Guest related conf
 agent_heartbeat_time = 10
 agent_call_low_timeout = 5
 agent_call_high_timeout = 150
-
-# Reboot time out for instances
-reboot_time_out = 60
-
-# Trove api-paste file name
-api_paste_config = api-paste.ini
 
 [keystone_authtoken]
 insecure = {{ keystone_service_internaluri_insecure | bool }}
@@ -91,6 +85,7 @@ project_name = {{ trove_service_project_name }}
 username = {{ trove_service_user_name }}
 password = {{ trove_service_password }}
 region_name = {{ keystone_service_region }}
+interface = {{ trove_service_endpoint_type }}
 
 memcached_servers = {{ trove_memcached_servers }}
 token_cache_time = 300
@@ -98,6 +93,15 @@ token_cache_time = 300
 # if your memcached server is shared, use these settings to avoid cache poisoning
 memcache_security_strategy = ENCRYPT
 memcache_secret_key = {{ memcached_encryption_key }}
+
+[service_credentials]
+auth_url = {{ trove_auth_url }}
+username = {{ trove_service_user_name }}
+password = {{ trove_service_password }}
+project_name = {{ trove_service_project_name }}
+region_name = {{ trove_service_region }}
+project_domain_name = {{ trove_service_project_domain_name }}
+user_domain_name = {{ trove_service_user_domain_name }}
 
 [database]
 connection = "{{ trove_galera_connection_string }}"
@@ -117,7 +121,13 @@ enabled = {{ trove_profiler_enabled }}
 ssl = {{ trove_oslomsg_rpc_use_ssl }}
 
 [oslo_messaging_notifications]
-driver = {% if trove_ceilometer_enabled %}messagingv2{% else %}noop{% endif %}
+{% set notification_topics = [] %}
+{% if trove_ceilometer_enabled %}
+{%   set _ = notification_topics.append('notifications') %}
+{% endif %}
+{% if trove_designate_enabled %}
+{%   set _ = notification_topics.append(trove_notifications_designate) %}
+{% endif %}
+topics = {{ notification_topics | join(',') }}
+driver = {{ (notification_topics | length > 0) | ternary('messagingv2', 'noop') }}
 transport_url = {{ trove_oslomsg_notify_transport }}://{% for host in trove_oslomsg_notify_servers.split(',') %}{{ trove_oslomsg_notify_userid }}:{{ trove_oslomsg_notify_password }}@{{ host }}:{{ trove_oslomsg_notify_port }}{% if not loop.last %},{% else %}/{{ trove_oslomsg_notify_vhost }}{% endif %}{% endfor %}
-
-{% include 'include_db.j2' %}

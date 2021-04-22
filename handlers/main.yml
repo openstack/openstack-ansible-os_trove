@@ -19,6 +19,7 @@
   systemd:
     name: "{{ trove_services['trove-api']['service_name'] }}"
     state: "restarted"
+  when: "'trove-api' in filtered_trove_services"
   listen:
     - "Restart trove services"
     - "venv changed"
@@ -40,10 +41,14 @@
     - "venv changed"
 
 # NOTE (noonedeadpunk): Remove this task after Xena release
-- name: Remove obsoleted policy.json
+- name: Remove obsoleted config files
   file:
-    path: "/etc/trove/policy.json"
+    path: "{{ item }}"
     state: absent
+  with_items:
+    - /etc/trove/policy.json
+    - /etc/trove/trove-conductor.conf
+    - /etc/trove/trove-taskmanager.conf
   listen:
     - "Restart trove services"
     - "venv changed"
