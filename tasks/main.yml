@@ -150,7 +150,6 @@
   vars:
     _project_name: "{{ trove_service_project_name }}"
     _project_domain: "{{ trove_service_project_domain_id }}"
-    _project_description: "{{ trove_service_description }}"
     _service_adminuri_insecure: "{{ keystone_service_adminuri_insecure }}"
     _service_setup_host: "{{ trove_service_setup_host }}"
     _service_setup_host_python_interpreter: "{{ trove_service_setup_host_python_interpreter }}"
