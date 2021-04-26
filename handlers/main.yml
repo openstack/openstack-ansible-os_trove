@@ -15,27 +15,18 @@
 #
 # (c) 2016 Donovan Francesco <donovan.francesco@is.co.za>
 # (c) 2016 Paul Stevens <paul.stevens@is.co.za>
-- name: Restart trove API services
-  systemd:
-    name: "{{ trove_services['trove-api']['service_name'] }}"
-    state: "restarted"
-  when: "'trove-api' in filtered_trove_services"
-  listen:
-    - "Restart trove services"
-    - "venv changed"
 
-- name: Restart trove conductor service
+- name: Restart Trove services
   systemd:
-    name: "{{ trove_services['trove-conductor']['service_name'] }}"
+    name: "{{ item.service_name }}"
+    enabled: yes
     state: "restarted"
-  listen:
-    - "Restart trove services"
-    - "venv changed"
-
-- name: Restart trove taskmanager service
-  systemd:
-    name: "{{ trove_services['trove-conductor']['service_name'] }}"
-    state: "restarted"
+    daemon_reload: yes
+  with_items: "{{ filtered_trove_services }}"
+  register: _restart
+  until: _restart is success
+  retries: 5
+  delay: 2
   listen:
     - "Restart trove services"
     - "venv changed"
