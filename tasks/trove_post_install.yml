@@ -26,7 +26,7 @@
   run_once: true
 
 - name: Drop trove api Config(s)
-  config_template:
+  openstack.config_template.config_template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
     owner: "{{ trove_system_user_name }}"
@@ -52,7 +52,7 @@
     - Restart uwsgi services
 
 - name: Implement policy.yaml if there are overrides configured
-  config_template:
+  openstack.config_template.config_template:
     content: "{{ trove_policy_overrides }}"
     dest: "/etc/trove/policy.yaml"
     owner: "{{ trove_system_user_name }}"
