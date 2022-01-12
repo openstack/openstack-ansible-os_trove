@@ -35,7 +35,12 @@
   tags:
     - always
 
-- import_tasks: db_setup.yml
+- include_role:
+    name: openstack.osa.db_setup
+    apply:
+      tags:
+        - common-db
+        - trove-config
   when:
     - _trove_is_first_play_host
   vars:
@@ -49,10 +54,14 @@
           - username: "{{ trove_galera_user }}"
             password: "{{ trove_galera_password }}"
   tags:
-    - common-db
-    - trove-config
+    - always
 
-- import_tasks: mq_setup.yml
+- include_role:
+    name: openstack.osa.mq_setup
+    apply:
+      tags:
+        - common-mq
+        - trove-config
   when:
     - _trove_is_first_play_host
   vars:
@@ -67,8 +76,7 @@
     _oslomsg_notify_vhost: "{{ trove_oslomsg_notify_vhost }}"
     _oslomsg_notify_transport: "{{ trove_oslomsg_notify_transport }}"
   tags:
-    - common-mq
-    - trove-config
+    - always
 
 - import_tasks: trove_pre_install.yml
   tags:
@@ -146,7 +154,12 @@
     - trove-config
     - uwsgi
 
-- import_tasks: service_setup.yml
+- include_role:
+    name: openstack.osa.service_setup
+    apply:
+      tags:
+        - trove-install
+        - common-service
   vars:
     _project_name: "{{ trove_service_project_name }}"
     _project_domain: "{{ trove_service_project_domain_id }}"
@@ -178,7 +191,7 @@
         description: "{{ trove_service_description }}"
   when: _trove_is_first_play_host
   tags:
-    - trove-install
+    - always
 
 - import_tasks: trove_db_sync.yml
   when: _trove_conductor_is_first_play_host
