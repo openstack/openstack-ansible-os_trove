@@ -31,15 +31,3 @@
     - "Restart trove services"
     - "venv changed"
 
-# NOTE (noonedeadpunk): Remove this task after Xena release
-- name: Remove obsoleted config files
-  file:
-    path: "{{ item }}"
-    state: absent
-  with_items:
-    - /etc/trove/policy.json
-    - /etc/trove/trove-conductor.conf
-    - /etc/trove/trove-taskmanager.conf
-  listen:
-    - "Restart trove services"
-    - "venv changed"
