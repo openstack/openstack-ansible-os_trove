@@ -174,12 +174,10 @@
     _service_in_ldap: "{{ trove_service_in_ldap }}"
     _service_project_name: "{{ trove_service_project_name }}"
     _service_region: "{{ trove_service_region }}"
-    _service_users: |-
-      {% set users = [{'name': trove_service_user_name, 'password': trove_service_password}] %}
-      {% for role in trove_service_admin_role_names %}
-      {%   set _ = users.append({'name': trove_service_user_name, 'role': role}) %}
-      {% endfor %}
-      {{ users }}
+    _service_users:
+      - name: "{{ trove_service_user_name }}"
+        password: "{{ trove_service_password }}"
+        role: "{{ trove_service_admin_role_names }}"
     _service_endpoints:
       - service: "{{ trove_service_name }}"
         interface: "public"

@@ -87,6 +87,10 @@ password = {{ trove_service_password }}
 region_name = {{ keystone_service_region }}
 interface = {{ trove_service_endpoint_type }}
 
+service_token_roles_required = {{ trove_service_token_roles_required | bool }}
+service_token_roles = {{ trove_service_token_roles | join(',') }}
+service_type = {{ trove_service_type }}
+
 memcached_servers = {{ trove_memcached_servers }}
 token_cache_time = 300
 

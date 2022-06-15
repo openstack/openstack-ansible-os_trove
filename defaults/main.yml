@@ -44,6 +44,10 @@ trove_service_description: "OpenStack DBaaS (Trove)"
 trove_service_project_name: service
 trove_service_admin_role_names:
   - admin
+  - service
+trove_service_token_roles:
+  - service
+trove_service_token_roles_required: "{{ openstack_service_token_roles_required | default(True) }}"
 trove_service_region: "{{ service_region | default('RegionOne') }}"
 trove_service_endpoint_type: internal
 trove_service_host: "{{ openstack_service_bind_address | default('0.0.0.0') }}"
