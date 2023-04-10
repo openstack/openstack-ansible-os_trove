@@ -29,7 +29,7 @@
 
     - name: Store admin tenant id
       set_fact:
-        keystone_admin_tenant_id: "{{ _get_admin_project.openstack_projects[0].id }}"
+        keystone_admin_tenant_id: "{{ _get_admin_project.projects[0].id }}"
 
     - name: Create trove service network
       openstack.cloud.network:
