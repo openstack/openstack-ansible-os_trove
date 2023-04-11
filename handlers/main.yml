@@ -30,4 +30,4 @@
   listen:
     - "Restart trove services"
     - "venv changed"
-
+    - "systemd service changed"
