@@ -72,6 +72,9 @@ trove_api_workers: "{{ [[(ansible_facts['processor_vcpus']//ansible_facts['proce
 # uWSGI settings
 trove_wsgi_threads: 1
 trove_use_uwsgi: True
+trove_uwsgi_tls:
+  crt: "{{ trove_ssl_cert }}"
+  key: "{{ trove_ssl_key }}"
 
 ## Cap the maximum number of threads / workers when a user value is unspecified.
 trove_conductor_workers_max: 16
@@ -280,6 +283,7 @@ trove_services:
     uwsgi_overrides: "{{ trove_api_uwsgi_ini_overrides }}"
     uwsgi_bind_address: "{{ trove_service_host }}"
     uwsgi_port: "{{ trove_service_port }}"
+    uwsgi_tls: "{{ trove_backend_ssl | ternary(trove_uwsgi_tls, {}) }}"
     start_order: 1
   trove-conductor:
     group: trove_conductor
@@ -293,3 +297,51 @@ trove_services:
     execstarts: "{{ trove_bin }}/trove-taskmanager"
     init_config_overrides: "{{ trove_taskmanager_init_config_overrides }}"
     start_order: 3
+
+###
+### Backend TLS
+###
+
+# Define if communication between haproxy and service backends should be
+# encrypted with TLS.
+trove_backend_ssl: "{{ openstack_service_backend_ssl | default(False) }}"
+
+# Storage location for SSL certificate authority
+trove_pki_dir: "{{ openstack_pki_dir | default('/etc/openstack_deploy/pki') }}"
+
+# Delegated host for operating the certificate authority
+trove_pki_setup_host: "{{ openstack_pki_setup_host | default('localhost') }}"
+
+# trove server certificate
+trove_pki_keys_path: "{{ trove_pki_dir ~ '/certs/private/' }}"
+trove_pki_certs_path: "{{ trove_pki_dir ~ '/certs/certs/' }}"
+trove_pki_intermediate_cert_name: "{{ openstack_pki_service_intermediate_cert_name | default('ExampleCorpIntermediate') }}"
+trove_pki_regen_cert: ''
+trove_pki_san: "{{ openstack_pki_san | default('DNS:' ~ ansible_facts['hostname'] ~ ',IP:' ~ management_address) }}"
+trove_pki_certificates:
+  - name: "trove_{{ ansible_facts['hostname'] }}"
+    provider: ownca
+    cn: "{{ ansible_facts['hostname'] }}"
+    san: "{{ trove_pki_san }}"
+    signed_by: "{{ trove_pki_intermediate_cert_name }}"
+
+# trove destination files for SSL certificates
+trove_ssl_cert: /etc/trove/trove.pem
+trove_ssl_key: /etc/trove/trove.key
+
+# Installation details for SSL certificates
+trove_pki_install_certificates:
+  - src: "{{ trove_user_ssl_cert | default(trove_pki_certs_path ~ 'trove_' ~ ansible_facts['hostname'] ~ '-chain.crt') }}"
+    dest: "{{ trove_ssl_cert }}"
+    owner: "{{ trove_system_user_name }}"
+    group: "{{ trove_system_user_name }}"
+    mode: "0644"
+  - src: "{{ trove_user_ssl_key | default(trove_pki_keys_path ~ 'trove_' ~ ansible_facts['hostname'] ~ '.key.pem') }}"
+    dest: "{{ trove_ssl_key }}"
+    owner: "{{ trove_system_user_name }}"
+    group: "{{ trove_system_user_name }}"
+    mode: "0600"
+
+# Define user-provided SSL certificates
+#trove_user_ssl_cert: <path to cert on ansible deployment host>
+#trove_user_ssl_key: <path to cert on ansible deployment host>
