@@ -87,6 +87,26 @@
   tags:
     - trove-install
 
+- name: Create and install SSL certificates
+  include_role:
+    name: pki
+    tasks_from: main_certs.yml
+    apply:
+      tags:
+        - trove-config
+        - pki
+  vars:
+    pki_setup_host: "{{ trove_pki_setup_host }}"
+    pki_dir: "{{ trove_pki_dir }}"
+    pki_create_certificates: "{{ trove_user_ssl_cert is not defined and trove_user_ssl_key is not defined }}"
+    pki_regen_cert: "{{ trove_pki_regen_cert }}"
+    pki_certificates: "{{ trove_pki_certificates }}"
+    pki_install_certificates: "{{ trove_pki_install_certificates }}"
+  when:
+    - trove_backend_ssl
+  tags:
+    - always
+
 - name: Install the python venv
   import_role:
     name: "python_venv_build"
