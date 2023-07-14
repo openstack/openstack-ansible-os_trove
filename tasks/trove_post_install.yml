@@ -16,10 +16,10 @@
 # (c) 2016 Donovan Francesco <donovan.francesco@is.co.za>
 # (c) 2016 Paul Stevens <paul.stevens@is.co.za>
 
-- name: Gathering network facts for {{ trove_provider_net_name }} interface
+- name: Gathering network facts for interface {{ trove_provider_net_name }}
   setup:
     gather_subset: "!all,network"
-    filter: "{{ trove_address_gather_filter | default('ansible_' ~ trove_provider_net_iface | replace('-','_')) }}"
+    filter: "{{ trove_address_gather_filter | default('ansible_' ~ trove_provider_net_iface | replace('-', '_')) }}"
   delegate_to: "{{ item }}"
   delegate_facts: true
   with_items: "{{ (groups[trove_guest_rpc_host_group] + groups[trove_guest_notify_host_group]) | unique }}"

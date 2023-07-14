@@ -13,8 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-_trove_is_first_play_host: "{{ (trove_services['trove-api']['group'] in group_names and inventory_hostname == (groups[trove_services['trove-api']['group']] | intersect(ansible_play_hosts)) | first) | bool }}"
-_trove_conductor_is_first_play_host: "{{ (trove_services['trove-conductor']['group'] in group_names and inventory_hostname == (groups[trove_services['trove-conductor']['group']] | intersect(ansible_play_hosts)) | first) | bool }}"
+_trove_is_first_play_host: >-
+  {{
+    (trove_services['trove-api']['group'] in group_names and
+      inventory_hostname == (groups[trove_services['trove-api']['group']] | intersect(ansible_play_hosts)) | first) | bool
+  }}
+_trove_conductor_is_first_play_host: >-
+  {{
+    (trove_services['trove-conductor']['group'] in group_names and
+      inventory_hostname == (groups[trove_services['trove-conductor']['group']] | intersect(ansible_play_hosts)) | first) | bool
+  }}
 
 filtered_trove_services: |-
   {% set services = [] %}

@@ -17,14 +17,18 @@
 # (c) 2016 Donovan Francesco <donovan.francesco@is.co.za>
 # (c) 2016 Paul Stevens <paul.stevens@is.co.za>
 
-#python venv executable
+# python venv executable
 trove_venv_python_executable: "{{ openstack_venv_python_executable | default('python3') }}"
 
 # Set the host which will execute the shade modules
 # for the service setup. The host must already have
 # clouds.yaml properly configured.
 trove_service_setup_host: "{{ openstack_service_setup_host | default('localhost') }}"
-trove_service_setup_host_python_interpreter: "{{ openstack_service_setup_host_python_interpreter | default((trove_service_setup_host == 'localhost') | ternary(ansible_playbook_python, ansible_facts['python']['executable'])) }}"
+trove_service_setup_host_python_interpreter: >-
+  {{
+    openstack_service_setup_host_python_interpreter | default(
+      (trove_service_setup_host == 'localhost') | ternary(ansible_playbook_python, ansible_facts['python']['executable']))
+  }}
 
 trove_package_state: "{{ package_state | default('latest') }}"
 
@@ -67,7 +71,8 @@ trove_profiler_enabled: false
 
 ## Cap the maximum number of threads / workers when a user value is unspecified.
 trove_api_workers_max: 16
-trove_api_workers: "{{ [[(ansible_facts['processor_vcpus']//ansible_facts['processor_threads_per_core'])|default(1), 1] | max * 2, trove_api_workers_max] | min }}"
+trove_api_workers: >-
+  {{ [[(ansible_facts['processor_vcpus'] // ansible_facts['processor_threads_per_core']) | default(1), 1] | max * 2, trove_api_workers_max] | min }}
 
 # uWSGI settings
 trove_wsgi_threads: 1
@@ -78,7 +83,8 @@ trove_uwsgi_tls:
 
 ## Cap the maximum number of threads / workers when a user value is unspecified.
 trove_conductor_workers_max: 16
-trove_conductor_workers: "{{ [[(ansible_facts['processor_vcpus']//ansible_facts['processor_threads_per_core'])|default(1), 1] | max * 2, trove_conductor_workers_max] | min }}"
+trove_conductor_workers: >-
+  {{ [[(ansible_facts['processor_vcpus'] // ansible_facts['processor_threads_per_core']) | default(1), 1] | max * 2, trove_conductor_workers_max] | min }}
 
 # Enable/Disable Ceilometer
 trove_ceilometer_enabled: "{{ (groups['ceilometer_all'] is defined) and (groups['ceilometer_all'] | length > 0) }}"
@@ -91,20 +97,28 @@ trove_bin: "/openstack/venvs/trove-{{ trove_venv_tag }}/bin"
 
 trove_git_repo: "https://opendev.org/openstack/trove"
 trove_git_install_branch: master
-trove_upper_constraints_url: "{{ requirements_git_url | default('https://releases.openstack.org/constraints/upper/' ~ requirements_git_install_branch | default('master')) }}"
+trove_upper_constraints_url: >-
+  {{ requirements_git_url | default('https://releases.openstack.org/constraints/upper/' ~ requirements_git_install_branch | default('master')) }}
 trove_git_constraints:
   - "--constraint {{ trove_upper_constraints_url }}"
 
 # Database vars
 trove_db_setup_host: "{{ openstack_db_setup_host | default('localhost') }}"
-trove_db_setup_python_interpreter: "{{ openstack_db_setup_python_interpreter | default((trove_db_setup_host == 'localhost') | ternary(ansible_playbook_python, ansible_facts['python']['executable'])) }}"
+trove_db_setup_python_interpreter: >-
+  {{
+    openstack_db_setup_python_interpreter | default(
+      (trove_db_setup_host == 'localhost') | ternary(ansible_playbook_python, ansible_facts['python']['executable']))
+  }}
 trove_galera_address: "{{ galera_address | default('127.0.0.1') }}"
 trove_galera_database_name: trove
 trove_galera_user: trove
 trove_galera_use_ssl: "{{ galera_use_ssl | default(False) }}"
 trove_galera_ssl_ca_cert: "{{ galera_ssl_ca_cert | default('') }}"
 trove_galera_port: "{{ galera_port | default('3306') }}"
-trove_galera_connection_string: "mysql+pymysql://{{ trove_galera_user}}:{{ trove_galera_password }}@{{ trove_galera_address }}:{{ trove_galera_port }}/{{ trove_galera_database_name }}?charset=utf8{% if trove_galera_use_ssl | bool %}&ssl_verify_cert=true{% if trove_galera_ssl_ca_cert | length > 0 %}&ssl_ca={{ trove_galera_ssl_ca_cert }}{% endif %}{% endif %}"
+trove_galera_connection_string: >-
+  mysql+pymysql://{{ trove_galera_user}}:{{ trove_galera_password }}@{{ trove_galera_address }}:{{ trove_galera_port }}/{{ trove_galera_database_name
+    }}?charset=utf8{% if trove_galera_use_ssl | bool %}&ssl_verify_cert=true{%
+      if trove_galera_ssl_ca_cert | length > 0 %}&ssl_ca={{ trove_galera_ssl_ca_cert }}{% endif %}{% endif %}
 trove_db_max_overflow: "{{ openstack_db_max_overflow | default('50') }}"
 trove_db_max_pool_size: "{{ openstack_db_max_pool_size | default('5') }}"
 trove_db_pool_timeout: "{{ openstack_db_pool_timeout | default('30') }}"
@@ -155,15 +169,28 @@ trove_rabbit_notification_topic: notification
 #
 # The value of 'net_name' field of the provider network network to use for infrastructure services
 trove_provider_net_name: dbaas-mgmt
-trove_provider_network: "{{ provider_networks|map(attribute='network')|selectattr('net_name','defined')|selectattr('net_name', 'equalto', trove_provider_net_name)|list|first }}"
+trove_provider_network: >-
+  {{
+    provider_networks | map(attribute='network') | selectattr('net_name','defined') | selectattr(
+      'net_name', 'equalto', trove_provider_net_name
+    ) | list | first
+  }}
 # The name of the network interface
 trove_provider_net_iface: "{{ (is_metal | bool) | ternary(trove_provider_network['container_bridge'], trove_provider_network['container_interface']) }}"
 trove_guest_endpoint_type: public
 trove_guest_rpc_host_group: "{{ oslomsg_rpc_host_group | default('rabbitmq_all') }}"
-trove_guest_oslomsg_rpc_servers: "{{ groups[trove_guest_rpc_host_group] | map('extract', hostvars, 'ansible_facts') | map(attribute=trove_provider_net_iface | replace('-','_')) | map(attribute='ipv4.address') | join(',') }}"
+trove_guest_oslomsg_rpc_servers: >-
+  {{
+    groups[trove_guest_rpc_host_group] | map('extract', hostvars, 'ansible_facts') | map(attribute=trove_provider_net_iface | replace('-','_')
+      ) | map(attribute='ipv4.address') | join(',')
+  }}
 trove_guest_oslomsg_rpc_use_ssl: "{{ oslomsg_rpc_use_ssl | default(False) }}"
 trove_guest_notify_host_group: "{{ oslomsg_notify_host_group | default('rabbitmq_all') }}"
-trove_guest_oslomsg_notify_servers:  "{{ groups[trove_guest_notify_host_group] | map('extract', hostvars, 'ansible_facts') | map(attribute=trove_provider_net_iface | replace('-','_')) | map(attribute='ipv4.address') | join(',') }}"
+trove_guest_oslomsg_notify_servers: >-
+  {{
+    groups[trove_guest_notify_host_group] | map('extract', hostvars, 'ansible_facts') | map(attribute=trove_provider_net_iface | replace('-','_')
+      ) | map(attribute='ipv4.address') | join(',')
+  }}
 trove_guest_oslomsg_notify_use_ssl: "{{ oslomsg_notify_use_ssl | default(False) }}"
 
 # Trove image settings.
@@ -187,7 +214,12 @@ trove_guestagent_images: []
 trove_guest_auth_url: "{{ keystone_service_publicurl }}"
 trove_guest_swift_url: "{{ trove_service_publicuri_proto }}://{{ external_lb_vip_address }}:{{ swift_proxy_port }}/v1/AUTH_"
 
-trove_swift_enabled: "{{ (groups['swift_all'] is defined and groups['swift_all'] | length > 0) or (groups['ceph-rgw'] is defined and groups['ceph-rgw'] | length > 0) or (ceph_rgws is defined and ceph_rgws | length > 0) }}"
+trove_swift_enabled: >-
+  {{
+    (groups['swift_all'] is defined and groups['swift_all'] | length > 0) or
+    (groups['ceph-rgw'] is defined and groups['ceph-rgw'] | length > 0) or
+    (ceph_rgws is defined and ceph_rgws | length > 0)
+  }}
 trove_designate_enabled: "{{ (groups['designate_all'] is defined and groups['designate_all'] | length > 0) }}"
 trove_cinder_enabled: "{{ (groups['cinder_volume'] is defined and groups['cinder_volume'] | length > 0) }}"
 
@@ -244,7 +276,7 @@ trove_service_user_domain_name: Default
 trove_service_project_domain_id: default
 trove_service_user_domain_id: default
 
-#Glance images
+# Glance images
 trove_glance_images: []
 
 trove_pip_packages:
@@ -347,5 +379,5 @@ trove_pki_install_certificates:
     mode: "0600"
 
 # Define user-provided SSL certificates
-#trove_user_ssl_cert: <path to cert on ansible deployment host>
-#trove_user_ssl_key: <path to cert on ansible deployment host>
+# trove_user_ssl_cert: <path to cert on ansible deployment host>
+# trove_user_ssl_key: <path to cert on ansible deployment host>

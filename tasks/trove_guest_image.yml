@@ -32,6 +32,7 @@
         url: "{{ item.file }}"
         dest: "{{ trove_image_local_path }}/{{ item.file | basename }}"
         checksum: "{{ item.checksum | default(omit) }}"
+        mode: "0644"
       retries: 5
       delay: 10
       register: trove_download_images
@@ -59,7 +60,7 @@
         # This uses command since os_image doesn't support tags.
         # TODO(odyssey4me):
         # Add tag capability to os_image module and replace this.
-        - name: Upload new image to glance
+        - name: Upload new image to glance # noqa: no-changed-when jinja[spacing]
           command: >-
             openstack image create
             --os-cloud {{ item.cloud | default('default') }}
