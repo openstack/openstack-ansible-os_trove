@@ -24,6 +24,17 @@ _trove_conductor_is_first_play_host: >-
       inventory_hostname == (groups[trove_services['trove-conductor']['group']] | intersect(ansible_play_hosts)) | first) | bool
   }}
 
+_trove_oslomsg_rpc_vhost_conf: >-
+  {{
+    (trove_oslomsg_rpc_vhost is string) | ternary(
+      trove_oslomsg_rpc_vhost, trove_oslomsg_rpc_vhost | selectattr('state', 'eq', 'present') | map(attribute='name') | first)
+  }}
+_trove_oslomsg_notify_vhost_conf: >-
+  {{
+    (trove_oslomsg_notify_vhost is string) | ternary(
+      trove_oslomsg_notify_vhost, trove_oslomsg_notify_vhost | selectattr('state', 'eq', 'present') | map(attribute='name') | first)
+  }}
+
 filtered_trove_services: |-
   {% set services = [] %}
   {% for key, value in trove_services.items() %}

@@ -13,7 +13,7 @@ trove_conductor_workers={{ trove_conductor_workers }}
 
 taskmanager_manager = trove.taskmanager.manager.Manager
 
-transport_url = {{ trove_oslomsg_rpc_transport }}://{% for host in trove_oslomsg_rpc_servers.split(',') %}{{ trove_oslomsg_rpc_userid }}:{{ trove_oslomsg_rpc_password }}@{{ host }}:{{ trove_oslomsg_rpc_port }}{% if not loop.last %},{% else %}/{{ trove_oslomsg_rpc_vhost }}{% if trove_oslomsg_rpc_use_ssl | bool %}?ssl=1&ssl_version={{ trove_oslomsg_rpc_ssl_version }}&ssl_ca_file={{ trove_oslomsg_rpc_ssl_ca_file }}{% else %}?ssl=0{% endif %}{% endif %}{% endfor %}
+transport_url = {{ trove_oslomsg_rpc_transport }}://{% for host in trove_oslomsg_rpc_servers.split(',') %}{{ trove_oslomsg_rpc_userid }}:{{ trove_oslomsg_rpc_password }}@{{ host }}:{{ trove_oslomsg_rpc_port }}{% if not loop.last %},{% else %}/{{ _trove_oslomsg_rpc_vhost_conf }}{% if trove_oslomsg_rpc_use_ssl | bool %}?ssl=1&ssl_version={{ trove_oslomsg_rpc_ssl_version }}&ssl_ca_file={{ trove_oslomsg_rpc_ssl_ca_file }}{% else %}?ssl=0{% endif %}{% endif %}{% endfor %}
 
 {# There must be a blank line above or the following line will be appended to the previous. #}
 control_exchange = {{ trove_control_exchange }}
@@ -126,6 +126,9 @@ enabled = {{ trove_profiler_enabled }}
 
 [oslo_messaging_rabbit]
 ssl = {{ trove_oslomsg_rpc_use_ssl }}
+rabbit_quorum_queue = {{ trove_oslomsg_rabbit_quorum_queues }}
+rabbit_quorum_delivery_limit = {{ trove_oslomsg_rabbit_quorum_delivery_limit }}
+rabbit_quorum_max_memory_bytes = {{ trove_oslomsg_rabbit_quorum_max_memory_bytes }}
 
 [oslo_messaging_notifications]
 {% set notification_topics = [] %}
@@ -137,4 +140,4 @@ ssl = {{ trove_oslomsg_rpc_use_ssl }}
 {% endif %}
 topics = {{ notification_topics | join(',') }}
 driver = {{ (notification_topics | length > 0) | ternary('messagingv2', 'noop') }}
-transport_url = {{ trove_oslomsg_notify_transport }}://{% for host in trove_oslomsg_notify_servers.split(',') %}{{ trove_oslomsg_notify_userid }}:{{ trove_oslomsg_notify_password }}@{{ host }}:{{ trove_oslomsg_notify_port }}{% if not loop.last %},{% else %}/{{ trove_oslomsg_notify_vhost }}{% if trove_oslomsg_notify_use_ssl | bool %}?ssl=1&ssl_version={{ trove_oslomsg_notify_ssl_version }}&ssl_ca_file={{ trove_oslomsg_notify_ssl_ca_file }}{% else %}?ssl=0{% endif %}{% endif %}{% endfor %}
+transport_url = {{ trove_oslomsg_notify_transport }}://{% for host in trove_oslomsg_notify_servers.split(',') %}{{ trove_oslomsg_notify_userid }}:{{ trove_oslomsg_notify_password }}@{{ host }}:{{ trove_oslomsg_notify_port }}{% if not loop.last %},{% else %}/{{ _trove_oslomsg_notify_vhost_conf }}{% if trove_oslomsg_notify_use_ssl | bool %}?ssl=1&ssl_version={{ trove_oslomsg_notify_ssl_version }}&ssl_ca_file={{ trove_oslomsg_notify_ssl_ca_file }}{% else %}?ssl=0{% endif %}{% endif %}{% endfor %}
