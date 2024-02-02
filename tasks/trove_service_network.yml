@@ -15,60 +15,24 @@
 # limitations under the License.
 
 - name: Set up the service network
-  delegate_to: "{{ trove_service_setup_host }}"
+  ansible.builtin.include_role:
+    name: openstack.osa.openstack_resources
   vars:
-    ansible_python_interpreter: "{{ trove_service_setup_host_python_interpreter }}"
-  block:
-    - name: Get admin tenant id
-      openstack.cloud.project_info:
-        cloud: default
-        name: admin
-        interface: internal
-        validate_certs: "{{ not (keystone_service_internaluri_insecure | bool) }}"
-      register: _get_admin_project
-
-    - name: Store admin tenant id
-      set_fact:
-        keystone_admin_tenant_id: "{{ _get_admin_project.projects[0].id }}"
-
-    - name: Create trove service network
-      openstack.cloud.network:
-        cloud: default
-        validate_certs: "{{ trove_service_net_validate_certs }}"
-        state: present
-        name: "{{ trove_service_net_name }}"
-        provider_physical_network: "{{ trove_service_net_phys_net }}"
-        provider_network_type: "{{ trove_service_net_type }}"
-        provider_segmentation_id: "{{ trove_service_net_segmentation_id | default(omit) }}"
-        project: "{{ keystone_admin_tenant_id }}"
-        wait: yes
-        endpoint_type: "{{ trove_service_net_endpoint_type }}"
-      register: trove_network
-      until: trove_network is success
-      retries: 5
-      delay: 2
-      run_once: true
-
-    - name: Create trove service subnet
-      openstack.cloud.subnet:
-        cloud: default
-        validate_certs: "{{ trove_service_net_validate_certs }}"
-        state: present
-        network_name: "{{ trove_service_net_name }}"
-        name: "{{ trove_service_subnet_name }}"
-        allocation_pool_start: "{{ trove_service_net_allocation_pool_start | default(omit) }}"
-        allocation_pool_end: "{{ trove_service_net_allocation_pool_end | default(omit) }}"
-        cidr: "{{ trove_service_net_subnet_cidr }}"
-        enable_dhcp: "{{ trove_service_net_dhcp }}"
-        project: "{{ keystone_admin_tenant_id }}"
-        wait: yes
-        endpoint_type: "{{ trove_service_net_endpoint_type }}"
-      register: subnet_create
-      until: subnet_create is success
-      retries: 5
-      delay: 2
-      run_once: true
-  # Block end
+    openstack_resources_setup_host: "{{ trove_service_setup_host }}"
+    openstack_resources_python_interpreter: "{{ trove_service_setup_host_python_interpreter }}"
+    openstack_resources_network:
+      networks:
+        - name: "{{ trove_service_net_name }}"
+          network_type: "{{ trove_service_net_type }}"
+          physical_network: "{{ trove_service_net_phys_net }}"
+          segmentation_id: "{{ trove_service_net_segmentation_id | default(omit) }}"
+          project: "admin"
+          subnets:
+            - name: "{{ trove_service_subnet_name }}"
+              cidr: "{{ trove_service_net_subnet_cidr }}"
+              dhcp: "{{ trove_service_net_dhcp }}"
+              allocation_start: "{{ trove_service_net_allocation_pool_start | default(omit) }}"
+              allocation_end: "{{ trove_service_net_allocation_pool_end | default(omit) }}"
   when: trove_service_net_setup
 
 - name: Get the service network ID
