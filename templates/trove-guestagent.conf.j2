@@ -42,4 +42,4 @@ ssl = {{ trove_guest_oslomsg_rpc_use_ssl }}
 {% endif %}
 topics = {{ notification_topics | join(',') }}
 driver = {{ (notification_topics | length > 0) | ternary('messagingv2', 'noop') }}
-transport_url = {{ trove_oslomsg_notify_transport }}://{% for host in trove_guest_oslomsg_notify_servers.split(',') %}{{ trove_oslomsg_notify_userid }}:{{ trove_oslomsg_notify_password }}@{{ host }}:{{ trove_oslomsg_notify_port }}{% if not loop.last %},{% else %}/{{ trove_oslomsg_notify_vhost }}{% endif %}{% endfor %}
+transport_url = {{ trove_oslomsg_notify_transport }}://{% for host in trove_guest_oslomsg_notify_servers.split(',') %}{{ trove_oslomsg_notify_userid }}:{{ trove_oslomsg_notify_password }}@{{ host }}:{{ trove_oslomsg_notify_port }}{% if not loop.last %},{% else %}/{{ trove_oslomsg_notify_vhost }}{% if trove_oslomsg_notify_use_ssl | bool %}?ssl=1&ssl_version={{ trove_oslomsg_notify_ssl_version }}&ssl_ca_file={{ trove_oslomsg_notify_ssl_ca_file }}{% else %}?ssl=0{% endif %}{% endif %}{% endfor %}
