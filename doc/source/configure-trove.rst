@@ -154,9 +154,9 @@ to:
 
 #. Add to the dbaas network mapping for the new group:
 
-.. code-block:: yaml
+    .. code-block:: yaml
 
-     - network:
+      - network:
         container_bridge: "br-dbaas"
         container_type: "veth"
         container_interface: "eth14"
@@ -187,9 +187,8 @@ to:
 
     .. code-block:: yaml
 
-        oslomsg_rpc_host_group: trove_rabbitmq
-        oslomsg_rpc_servers: "{{ groups[oslomsg_rpc_host_group] | map('extract', hostvars, 'ansible_host') | list | join(',') }}"
-        trove_guest_oslomsg_notify_servers: "{{ rabbitmq_servers }}"
+        trove_guest_rpc_host_group: trove_rabbitmq
+        trove_guest_oslomsg_rpc_password: SecretPassword
 
 #. Run playbooks to create rabbitmq containers and deploy cluster on them
 

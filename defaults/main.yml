@@ -160,6 +160,7 @@ trove_oslomsg_notify_ssl_ca_file: "{{ oslomsg_notify_ssl_ca_file | default('') }
 trove_oslomsg_rabbit_quorum_queues: "{{ oslomsg_rabbit_quorum_queues | default(True) }}"
 trove_oslomsg_rabbit_quorum_delivery_limit: "{{ oslomsg_rabbit_quorum_delivery_limit | default(0) }}"
 trove_oslomsg_rabbit_quorum_max_memory_bytes: "{{ oslomsg_rabbit_quorum_max_memory_bytes | default(0) }}"
+trove_guest_oslomsg_rabbit_quorum_queues: "{{ oslomsg_rabbit_quorum_queues | default(True) }}"
 
 ## Qdrouterd integration
 # TODO(ansmith): Change structure when more backends will be supported
@@ -189,20 +190,39 @@ trove_provider_network: >-
 # The name of the network interface
 trove_provider_net_iface: "{{ (is_metal | bool) | ternary(trove_provider_network['container_bridge'], trove_provider_network['container_interface']) }}"
 trove_guest_endpoint_type: public
+
+# Guestagent RPC configuration
 trove_guest_rpc_host_group: "{{ oslomsg_rpc_host_group | default('rabbitmq_all') }}"
 trove_guest_oslomsg_rpc_servers: >-
   {{
     groups[trove_guest_rpc_host_group] | map('extract', hostvars, 'ansible_facts') | map(attribute=trove_provider_net_iface | replace('-','_')
       ) | map(attribute='ipv4.address') | join(',')
   }}
-trove_guest_oslomsg_rpc_use_ssl: "{{ oslomsg_rpc_use_ssl | default(False) }}"
+trove_guest_oslomsg_rpc_use_ssl: "{{ trove_oslomsg_rpc_use_ssl }}"
+trove_guest_oslomsg_rpc_port: "{{ trove_oslomsg_rpc_port }}"
+trove_guest_oslomsg_rpc_userid: "{{ trove_oslomsg_rpc_userid }}"
+trove_guest_oslomsg_rpc_password: "{{ trove_oslomsg_rpc_password }}"
+trove_guest_oslomsg_rpc_ssl_version: "{{ trove_oslomsg_rpc_ssl_version }}"
+trove_guest_oslomsg_rpc_ssl_ca_file: "{{ trove_oslomsg_rpc_ssl_ca_file }}"
+trove_guest_oslomsg_rpc_vhost:
+  - name: /trove
+    state: "{{ trove_guest_oslomsg_rabbit_quorum_queues | ternary('absent', 'present') }}"
+  - name: trove
+    state: "{{ trove_guest_oslomsg_rabbit_quorum_queues | ternary('present', 'absent') }}"
+
 trove_guest_notify_host_group: "{{ oslomsg_notify_host_group | default('rabbitmq_all') }}"
 trove_guest_oslomsg_notify_servers: >-
   {{
     groups[trove_guest_notify_host_group] | map('extract', hostvars, 'ansible_facts') | map(attribute=trove_provider_net_iface | replace('-','_')
       ) | map(attribute='ipv4.address') | join(',')
   }}
-trove_guest_oslomsg_notify_use_ssl: "{{ oslomsg_notify_use_ssl | default(False) }}"
+trove_guest_oslomsg_notify_use_ssl: "{{ trove_oslomsg_notify_use_ssl }}"
+trove_guest_oslomsg_notify_port: "{{ trove_oslomsg_notify_port }}"
+trove_guest_oslomsg_notify_userid: "{{ trove_oslomsg_notify_userid }}"
+trove_guest_oslomsg_notify_password: "{{ trove_oslomsg_notify_password }}"
+trove_guest_oslomsg_notify_vhost: "{{ trove_guest_oslomsg_rpc_vhost }}"
+trove_guest_oslomsg_notify_ssl_version: "{{ trove_oslomsg_notify_ssl_version }}"
+trove_guest_oslomsg_notify_ssl_ca_file: "{{ trove_oslomsg_notify_ssl_ca_file }}"
 
 # Trove image settings.
 # Set the directory where the downloaded images will be stored

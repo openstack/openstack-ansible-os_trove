@@ -35,6 +35,17 @@ _trove_oslomsg_notify_vhost_conf: >-
       trove_oslomsg_notify_vhost, trove_oslomsg_notify_vhost | selectattr('state', 'eq', 'present') | map(attribute='name') | first)
   }}
 
+_trove_guest_oslomsg_rpc_vhost_conf: >-
+  {{
+    (trove_guest_oslomsg_rpc_vhost is string) | ternary(
+      trove_guest_oslomsg_rpc_vhost, trove_guest_oslomsg_rpc_vhost | selectattr('state', 'eq', 'present') | map(attribute='name') | first)
+  }}
+_trove_guest_oslomsg_notify_vhost_conf: >-
+  {{
+    (trove_guest_oslomsg_notify_vhost is string) | ternary(
+      trove_guest_oslomsg_notify_vhost, trove_guest_oslomsg_notify_vhost | selectattr('state', 'eq', 'present') | map(attribute='name') | first)
+  }}
+
 filtered_trove_services: |-
   {% set services = [] %}
   {% for key, value in trove_services.items() %}
