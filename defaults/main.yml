@@ -145,6 +145,7 @@ trove_oslomsg_rpc_ssl_version: "{{ oslomsg_rpc_ssl_version | default('TLSv1_2') 
 trove_oslomsg_rpc_ssl_ca_file: "{{ oslomsg_rpc_ssl_ca_file | default('') }}"
 
 # Notify
+trove_oslomsg_notify_configure: "{{ oslomsg_notify_configure | default(trove_ceilometer_enabled) }}"
 trove_oslomsg_notify_host_group: "{{ oslomsg_notify_host_group | default('rabbitmq_all') }}"
 trove_oslomsg_notify_setup_host: "{{ (trove_oslomsg_notify_host_group in groups) | ternary(groups[trove_oslomsg_notify_host_group][0], 'localhost') }}"
 trove_oslomsg_notify_transport: "{{ oslomsg_notify_transport | default('rabbit') }}"
@@ -213,6 +214,7 @@ trove_guest_oslomsg_rpc_vhost:
   - name: trove
     state: "{{ trove_guest_oslomsg_rabbit_quorum_queues | ternary('present', 'absent') }}"
 
+trove_guest_oslomsg_notify_configure: "{{ oslomsg_notify_configure | default(trove_ceilometer_enabled) }}"
 trove_guest_notify_host_group: "{{ oslomsg_notify_host_group | default('rabbitmq_all') }}"
 trove_guest_oslomsg_notify_servers: >-
   {{

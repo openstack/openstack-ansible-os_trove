@@ -132,7 +132,7 @@ rabbit_quorum_max_memory_bytes = {{ trove_oslomsg_rabbit_quorum_max_memory_bytes
 
 [oslo_messaging_notifications]
 {% set notification_topics = [] %}
-{% if trove_ceilometer_enabled %}
+{% if trove_oslomsg_notify_configure %}
 {%   set _ = notification_topics.append('notifications') %}
 {% endif %}
 {% if trove_designate_enabled %}

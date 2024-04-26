@@ -84,6 +84,7 @@
     _oslomsg_notify_vhost: "{{ trove_oslomsg_notify_vhost }}"
     _oslomsg_notify_transport: "{{ trove_oslomsg_notify_transport }}"
     _oslomsg_notify_policies: "{{ trove_oslomsg_notify_policies }}"
+    _oslomsg_notify_configure: "{{ trove_oslomsg_notify_configure }}"
   tags:
     - always
 
@@ -96,7 +97,8 @@
         - trove-agent-config
   when:
     - _trove_is_first_play_host
-    - (trove_oslomsg_rpc_host_group != trove_guest_rpc_host_group) or (trove_oslomsg_notify_host_group != trove_guest_notify_host_group)
+    - (trove_oslomsg_rpc_host_group != trove_guest_rpc_host_group) or
+      (trove_oslomsg_notify_host_group != trove_guest_notify_host_group and trove_guest_oslomsg_notify_configure)
   vars:
     _oslomsg_rpc_setup_host: "{{ trove_guest_rpc_host_group }}"
     _oslomsg_rpc_userid: "{{ trove_guest_oslomsg_rpc_userid }}"
@@ -110,6 +112,7 @@
     _oslomsg_notify_vhost: "{{ trove_guest_oslomsg_notify_vhost }}"
     _oslomsg_notify_transport: "{{ trove_oslomsg_notify_transport }}"
     _oslomsg_notify_policies: "{{ trove_guest_oslomsg_notify_policies }}"
+    _oslomsg_notify_configure: "{{ trove_guest_oslomsg_notify_configure }}"
   tags:
     - always
 
