@@ -159,15 +159,20 @@
   tags:
     - trove-install
 
-- name: Importing trove_service_network tasks
-  import_tasks: trove_service_network.yml
+- name: Including trove_resources tasks
+  include_tasks: trove_resources.yml
+  when:
+    - trove_service_net_setup or trove_guestagent_images
+    - _trove_is_first_play_host
+  args:
+    apply:
+      tags:
+        - trove-install
   tags:
     - trove-install
-    - trove-config
 
-- name: Including trove_guest_image tasks
-  include_tasks: trove_guest_image.yml
-  when: trove_guestagent_images | length > 0
+- name: Importing trove_service_network tasks
+  import_tasks: trove_service_network.yml
   tags:
     - trove-install
     - trove-config

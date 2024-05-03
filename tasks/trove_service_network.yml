@@ -14,27 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- name: Set up the service network
-  ansible.builtin.include_role:
-    name: openstack.osa.openstack_resources
-  vars:
-    openstack_resources_setup_host: "{{ trove_service_setup_host }}"
-    openstack_resources_python_interpreter: "{{ trove_service_setup_host_python_interpreter }}"
-    openstack_resources_network:
-      networks:
-        - name: "{{ trove_service_net_name }}"
-          network_type: "{{ trove_service_net_type }}"
-          physical_network: "{{ trove_service_net_phys_net }}"
-          segmentation_id: "{{ trove_service_net_segmentation_id | default(omit) }}"
-          project: "admin"
-          subnets:
-            - name: "{{ trove_service_subnet_name }}"
-              cidr: "{{ trove_service_net_subnet_cidr }}"
-              dhcp: "{{ trove_service_net_dhcp }}"
-              allocation_start: "{{ trove_service_net_allocation_pool_start | default(omit) }}"
-              allocation_end: "{{ trove_service_net_allocation_pool_end | default(omit) }}"
-  when: trove_service_net_setup
-
 - name: Get the service network ID
   delegate_to: "{{ trove_service_setup_host }}"
   vars:
