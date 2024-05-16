@@ -182,6 +182,7 @@
   tags:
     - trove-install
     - trove-config
+    - post-install
 
 - name: Run the systemd service role
   include_role:
