@@ -16,12 +16,12 @@
 _trove_is_first_play_host: >-
   {{
     (trove_services['trove-api']['group'] in group_names and
-      inventory_hostname == (groups[trove_services['trove-api']['group']] | intersect(ansible_play_hosts)) | first) | bool
+      inventory_hostname == (groups[trove_services['trove-api']['group']] | select('in', ansible_play_hosts)) | first) | bool
   }}
 _trove_conductor_is_first_play_host: >-
   {{
     (trove_services['trove-conductor']['group'] in group_names and
-      inventory_hostname == (groups[trove_services['trove-conductor']['group']] | intersect(ansible_play_hosts)) | first) | bool
+      inventory_hostname == (groups[trove_services['trove-conductor']['group']] | select('in', ansible_play_hosts)) | first) | bool
   }}
 
 _trove_oslomsg_rpc_vhost_conf: >-
