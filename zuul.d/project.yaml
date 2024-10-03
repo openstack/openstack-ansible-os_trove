@@ -17,7 +17,9 @@
     templates:
       - check-requirements
       - openstack-ansible-linters-jobs
-      - openstack-ansible-deploy-aio_metal-jobs
+      # NOTE: Metal jobs are replaced with LXC as N-1 is broken with DB migration issues
+      # - openstack-ansible-deploy-aio_metal-jobs
+      - openstack-ansible-deploy-aio_lxc-jobs
       # NOTE: We need to have distro install support before enabling
       # - openstack-ansible-deploy-aio_distro_metal-jobs
       - publish-openstack-docs-pti
