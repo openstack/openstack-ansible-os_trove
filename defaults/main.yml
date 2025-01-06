@@ -173,10 +173,6 @@ trove_guest_oslomsg_rabbit_transient_quorum_queues: "{{ oslomsg_rabbit_transient
 trove_guest_oslomsg_rabbit_qos_prefetch_count: "{{ oslomsg_rabbit_qos_prefetch_count | default(trove_guest_oslomsg_rabbit_stream_fanout | ternary(10, 0)) }}"
 trove_guest_oslomsg_rabbit_queue_manager: "{{ oslomsg_rabbit_queue_manager | default(trove_guest_oslomsg_rabbit_quorum_queues) }}"
 
-## Qdrouterd integration
-# TODO(ansmith): Change structure when more backends will be supported
-trove_oslomsg_amqp1_enabled: "{{ trove_oslomsg_rpc_transport == 'amqp' }}"
-
 # Specific pip packages provided by the user
 trove_user_pip_packages: []
 
@@ -338,9 +334,6 @@ trove_pip_packages:
 
 # Memcached override
 trove_memcached_servers: "{{ memcached_servers }}"
-
-trove_optional_oslomsg_amqp1_pip_packages:
-  - oslo.messaging[amqp1]
 
 ## Tunable overrides
 trove_config_overrides: {}
