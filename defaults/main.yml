@@ -76,7 +76,7 @@ trove_api_workers: >-
 
 # uWSGI settings
 trove_wsgi_threads: 1
-trove_use_uwsgi: True
+trove_use_uwsgi: true
 trove_uwsgi_tls:
   crt: "{{ trove_ssl_cert }}"
   key: "{{ trove_ssl_key }}"
@@ -270,15 +270,15 @@ trove_service_nova_endpoint_type: "{{ trove_service_endpoint_type }}"
 trove_service_glance_endpoint_type: "{{ trove_service_endpoint_type }}"
 trove_service_swift_endpoint_type: "{{ trove_service_endpoint_type }}"
 
-trove_dns_domain_name: 'trove.com.'
-trove_dns_domain_id: '00000000-0000-0000-0000-000000000000'
+trove_dns_domain_name: "trove.com."
+trove_dns_domain_id: "00000000-0000-0000-0000-000000000000"
 # Notification topics for designate.
 trove_notifications_designate: notifications_designate
 
 # Trove service network settings.
 # These values are used when creating an OpenStack network to be used by Trove. By default the network will
 # not be created.
-trove_service_net_setup: False
+trove_service_net_setup: false
 trove_service_net_validate_certs: "False"
 trove_service_net_phys_net: dbaas-mgmt
 trove_service_net_type: flat
@@ -390,7 +390,7 @@ trove_pki_setup_host: "{{ openstack_pki_setup_host | default('localhost') }}"
 trove_pki_keys_path: "{{ trove_pki_dir ~ '/certs/private/' }}"
 trove_pki_certs_path: "{{ trove_pki_dir ~ '/certs/certs/' }}"
 trove_pki_intermediate_cert_name: "{{ openstack_pki_service_intermediate_cert_name | default('ExampleCorpIntermediate') }}"
-trove_pki_regen_cert: ''
+trove_pki_regen_cert: ""
 trove_pki_san: "{{ openstack_pki_san | default('DNS:' ~ ansible_facts['hostname'] ~ ',IP:' ~ management_address) }}"
 trove_pki_certificates:
   - name: "trove_{{ ansible_facts['hostname'] }}"

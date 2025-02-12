@@ -18,6 +18,6 @@
 
 - name: Perform a trove DB sync
   command: "{{ trove_bin }}/trove-manage db_sync"
-  become: yes
+  become: true
   become_user: "{{ trove_system_user_name }}"
   changed_when: false

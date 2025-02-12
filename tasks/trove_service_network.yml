@@ -1,5 +1,4 @@
 ---
-
 # Copyright 2016,2017 IBM Corp.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +22,7 @@
       openstack.cloud.networks_info:
         cloud: default
         validate_certs: "{{ trove_service_net_validate_certs }}"
-        wait: yes
+        wait: true
         name: "{{ trove_service_net_name }}"
         endpoint_type: "{{ trove_service_net_endpoint_type }}"
       register: _get_trove_service_net
