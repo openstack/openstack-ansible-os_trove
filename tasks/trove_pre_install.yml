@@ -16,13 +16,13 @@
 # (c) 2016 Donovan Francesco <donovan.francesco@is.co.za>
 # (c) 2016 Paul Stevens <paul.stevens@is.co.za>
 - name: Create the system group
-  group:
+  ansible.builtin.group:
     name: "{{ trove_system_group_name }}"
     state: "present"
     system: "yes"
 
 - name: Create the trove system user
-  user:
+  ansible.builtin.user:
     name: "{{ trove_system_user_name }}"
     group: "{{ trove_system_group_name }}"
     comment: "{{ trove_system_user_comment }}"
@@ -32,7 +32,7 @@
     home: "{{ trove_system_user_home }}"
 
 - name: Create trove dirs
-  file:
+  ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
     owner: "{{ item.owner | default(trove_system_user_name) }}"

@@ -17,7 +17,7 @@
 # (c) 2016 Paul Stevens <paul.stevens@is.co.za>
 
 - name: Restart Trove services
-  systemd:
+  ansible.builtin.systemd:
     name: "{{ item.service_name }}"
     enabled: true
     state: "restarted"

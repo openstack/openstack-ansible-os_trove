@@ -17,7 +17,7 @@
 # (c) 2016 Paul Stevens <paul.stevens@is.co.za>
 
 - name: Perform a trove DB sync
-  command: "{{ trove_bin }}/trove-manage db_sync"
+  ansible.builtin.command: "{{ trove_bin }}/trove-manage db_sync"
   become: true
   become_user: "{{ trove_system_user_name }}"
   changed_when: false

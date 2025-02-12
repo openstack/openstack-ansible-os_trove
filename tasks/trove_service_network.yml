@@ -29,7 +29,7 @@
       run_once: true
 
     - name: Fail if trove service network is not available
-      fail:
+      ansible.builtin.fail:
         msg: >
           "Trove service network {{ trove_service_net_name }} is not available. "
           "For Trove to operate properly it needs a network created to allocate "
@@ -39,6 +39,6 @@
         - _get_trove_service_net.networks is not defined or _get_trove_service_net.networks | length == 0
 
     - name: Save trove service net id
-      set_fact:
+      ansible.builtin.set_fact:
         trove_service_net_id: "{{ _get_trove_service_net.networks[0].id }}"
       run_once: true
