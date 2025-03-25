@@ -33,7 +33,7 @@ trove_volume_support = {{ trove_cinder_enabled }}
 max_accepted_volume_size = 100
 max_volumes_per_tenant = 1000
 cinder_endpoint_type = {{ trove_service_cinder_endpoint_type }}
-cinder_service_type = volumev3
+cinder_service_type = block-storage
 
 # Trove DNS
 trove_dns_support = {{ trove_designate_enabled | bool }}
