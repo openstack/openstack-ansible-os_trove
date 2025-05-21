@@ -200,6 +200,7 @@ trove_guest_endpoint_type: public
 
 # Guestagent RPC configuration
 trove_guest_rpc_host_group: "{{ oslomsg_rpc_host_group | default('rabbitmq_all') }}"
+trove_guest_oslomsg_rpc_setup_host: "{{ (trove_guest_rpc_host_group in groups) | ternary(groups[trove_guest_rpc_host_group][0], 'localhost') }}"
 trove_guest_oslomsg_rpc_servers: >-
   {{
     groups[trove_guest_rpc_host_group] | map('extract', hostvars, 'ansible_facts') | map(attribute=trove_provider_net_iface | replace('-','_')

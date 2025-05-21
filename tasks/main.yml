@@ -100,7 +100,7 @@
     - (trove_oslomsg_rpc_host_group != trove_guest_rpc_host_group) or
       (trove_oslomsg_notify_host_group != trove_guest_notify_host_group and trove_guest_oslomsg_notify_configure)
   vars:
-    _oslomsg_rpc_setup_host: "{{ trove_guest_rpc_host_group }}"
+    _oslomsg_rpc_setup_host: "{{ trove_guest_oslomsg_rpc_setup_host }}"
     _oslomsg_rpc_userid: "{{ trove_guest_oslomsg_rpc_userid }}"
     _oslomsg_rpc_password: "{{ trove_guest_oslomsg_rpc_password }}"
     _oslomsg_rpc_vhost: "{{ trove_guest_oslomsg_rpc_vhost }}"
