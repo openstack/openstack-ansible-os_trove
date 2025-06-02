@@ -19,6 +19,23 @@
   vars:
     openstack_resources_setup_host: "{{ trove_service_setup_host }}"
     openstack_resources_python_interpreter: "{{ trove_service_setup_host_python_interpreter }}"
+    openstack_resources_deploy_host: "{{ trove_resources_deploy_host }}"
+    openstack_resources_deploy_python_interpreter: "{{ trove_resources_deploy_python_interpreter }}"
+    _keypairs:
+      - name: "{{ trove_guest_ssh_key_name }}"
+        path: "{{ trove_guest_ssh_key_dir }}/{{ trove_guest_ssh_key_name }}"
+        state: "{{ (trove_guest_ssh_enabled | bool) | ternary('present', 'absent') }}"
+        private_key_format: "{{ trove_guest_ssh_key_format }}"
+        size: "{{ trove_guest_ssh_key_size }}"
+        comment: "{{ trove_guest_ssh_key_comment }}"
+        type: "{{ trove_guest_ssh_key_type }}"
+        auth:
+          auth_url: "{{ keystone_service_adminurl }}"
+          username: "{{ trove_service_user_name }}"
+          password: "{{ trove_service_password }}"
+          project_name: "{{ trove_service_project_name }}"
+          user_domain_name: "{{ trove_service_user_domain_id }}"
+          project_domain_name: "{{ trove_service_project_domain_id }}"
     _network_resources:
       - name: "{{ trove_service_net_name }}"
         network_type: "{{ trove_service_net_type }}"
@@ -31,7 +48,20 @@
             dhcp: "{{ trove_service_net_dhcp }}"
             allocation_start: "{{ trove_service_net_allocation_pool_start | default(omit) }}"
             allocation_end: "{{ trove_service_net_allocation_pool_end | default(omit) }}"
+    _security_groups:
+      - name: "{{ trove_guest_ssh_security_group_name }}"
+        description: "security group for octavia amphora"
+        project: "{{ trove_service_project_name }}"
+        security_group_rules:
+          - protocol: tcp
+            port_range_min: 22
+            port_range_max: 22
+            remote_ip_prefix: "{{ trove_service_net_subnet_cidr }}"
+
     openstack_resources_network:
       networks: "{{ trove_service_net_setup | ternary(_network_resources, []) }}"
+      security_groups: "{{ (trove_guest_ssh_enabled) | ternary(_security_groups + trove_guest_ssh_security_group_extra_rules, []) }}"
     openstack_resources_image:
       images: "{{ _trove_glance_images_compat }}"
+    openstack_resources_compute:
+      keypairs: "{{ (trove_guest_ssh_key_manage | bool) | ternary(_keypairs, {}) }}"

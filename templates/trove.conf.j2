@@ -59,8 +59,12 @@ management_networks = {{ trove_service_net_id }}
 neutron_endpoint_type = {{ trove_service_neutron_endpoint_type }}
 neutron_service_type = network
 
-{% if trove_management_security_groups | length > 0 %}
-management_security_groups = {{ trove_management_security_groups | join(',') }}
+{% set _enabled_security_groups = trove_management_security_groups %}
+{% if trove_guest_ssh_enabled %}
+{%   set _ = _enabled_security_groups.append(trove_guest_ssh_security_group_id) %}
+{% endif %}
+{% if _enabled_security_groups | length > 0 %}
+management_security_groups = {{ _enabled_security_groups | join(',') }}
 {% endif %}
 
 {% if trove_swift_enabled is defined %}

@@ -158,6 +158,44 @@
   tags:
     - trove-install
 
+- name: Including osa.service_setup role
+  ansible.builtin.include_role:
+    name: openstack.osa.service_setup
+    apply:
+      tags:
+        - trove-install
+        - common-service
+  vars:
+    _project_name: "{{ trove_service_project_name }}"
+    _project_domain: "{{ trove_service_project_domain_id }}"
+    _service_adminuri_insecure: "{{ keystone_service_adminuri_insecure }}"
+    _service_setup_host: "{{ trove_service_setup_host }}"
+    _service_setup_host_python_interpreter: "{{ trove_service_setup_host_python_interpreter }}"
+    _service_in_ldap: "{{ trove_service_in_ldap }}"
+    _service_project_name: "{{ trove_service_project_name }}"
+    _service_region: "{{ trove_service_region }}"
+    _service_users:
+      - name: "{{ trove_service_user_name }}"
+        password: "{{ trove_service_password }}"
+        role: "{{ trove_service_admin_role_names }}"
+    _service_endpoints:
+      - service: "{{ trove_service_name }}"
+        interface: "public"
+        url: "{{ trove_service_publicurl }}"
+      - service: "{{ trove_service_name }}"
+        interface: "internal"
+        url: "{{ trove_service_internalurl }}"
+      - service: "{{ trove_service_name }}"
+        interface: "admin"
+        url: "{{ trove_service_adminurl }}"
+    _service_catalog:
+      - name: "{{ trove_service_name }}"
+        type: "{{ trove_service_type }}"
+        description: "{{ trove_service_description }}"
+  when: _trove_is_first_play_host
+  tags:
+    - always
+
 - name: Including trove_resources tasks
   ansible.builtin.include_tasks: trove_resources.yml
   when:
@@ -220,44 +258,6 @@
     - trove-install
     - trove-config
     - uwsgi
-
-- name: Including osa.service_setup role
-  ansible.builtin.include_role:
-    name: openstack.osa.service_setup
-    apply:
-      tags:
-        - trove-install
-        - common-service
-  vars:
-    _project_name: "{{ trove_service_project_name }}"
-    _project_domain: "{{ trove_service_project_domain_id }}"
-    _service_adminuri_insecure: "{{ keystone_service_adminuri_insecure }}"
-    _service_setup_host: "{{ trove_service_setup_host }}"
-    _service_setup_host_python_interpreter: "{{ trove_service_setup_host_python_interpreter }}"
-    _service_in_ldap: "{{ trove_service_in_ldap }}"
-    _service_project_name: "{{ trove_service_project_name }}"
-    _service_region: "{{ trove_service_region }}"
-    _service_users:
-      - name: "{{ trove_service_user_name }}"
-        password: "{{ trove_service_password }}"
-        role: "{{ trove_service_admin_role_names }}"
-    _service_endpoints:
-      - service: "{{ trove_service_name }}"
-        interface: "public"
-        url: "{{ trove_service_publicurl }}"
-      - service: "{{ trove_service_name }}"
-        interface: "internal"
-        url: "{{ trove_service_internalurl }}"
-      - service: "{{ trove_service_name }}"
-        interface: "admin"
-        url: "{{ trove_service_adminurl }}"
-    _service_catalog:
-      - name: "{{ trove_service_name }}"
-        type: "{{ trove_service_type }}"
-        description: "{{ trove_service_description }}"
-  when: _trove_is_first_play_host
-  tags:
-    - always
 
 - name: Importing trove_db_sync tasks
   ansible.builtin.import_tasks: trove_db_sync.yml

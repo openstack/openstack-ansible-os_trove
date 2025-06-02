@@ -1,0 +1,8 @@
+---
+features:
+  - |
+    Implemented SSH keypair generation for Trove Guest Agent. When
+    ``trove_guest_ssh_enabled`` is set to True, role will perform SSH
+    keypair generation and upload to Nova. With that, a security group
+    will be created and added to the ``management_security_groups``
+    which will allow SSH traffic on dbaas network.

@@ -256,6 +256,22 @@ trove_guestagent_images: []
 trove_guest_auth_url: "{{ keystone_service_publicurl }}"
 trove_guest_swift_url: "{{ trove_service_publicuri_proto }}://{{ external_lb_vip_address }}:{{ swift_proxy_port }}/v1/AUTH_"
 
+trove_resources_deploy_host: localhost
+trove_resources_deploy_python_interpreter: "{{ ansible_playbook_python }}"
+trove_guest_ssh_enabled: false
+trove_guest_ssh_key_manage: true
+trove_guest_ssh_key_name: trove_guestagent_key
+trove_guest_ssh_key_dir: "{{ openstack_ssh_keypairs_dir | default(lookup('env', 'HOME') ~ '/.ssh') }}"
+trove_guest_ssh_key_comment: "Generated-By-OpenStack-Ansible"
+# Options: ssh, pkcs1 and pkcs8
+trove_guest_ssh_key_format: ssh
+# Options: rsa, dsa, rsa1, ecdsa, ed25519
+trove_guest_ssh_key_type: rsa
+trove_guest_ssh_key_size: 4096
+# Security group which will allow SSH connections
+trove_guest_ssh_security_group_name: trove_guest_management
+trove_guest_ssh_security_group_extra_rules: []
+
 trove_swift_enabled: >-
   {{
     (groups['swift_all'] is defined and groups['swift_all'] | length > 0) or

@@ -42,3 +42,22 @@
       ansible.builtin.set_fact:
         trove_service_net_id: "{{ _get_trove_service_net.networks[0].id }}"
       run_once: true
+
+
+    - name: Register created security group
+      run_once: true
+      when:
+        - trove_guest_ssh_enabled
+      block:
+        - name: Get trove guestagent SSH security group ID
+          openstack.cloud.security_group_info:
+            cloud: default
+            validate_certs: "{{ trove_service_net_validate_certs }}"
+            wait: true
+            endpoint_type: "{{ trove_service_net_endpoint_type }}"
+            name: "{{ trove_guest_ssh_security_group_name }}"
+          register: _get_trove_security_group
+
+        - name: Save security group as fact
+          ansible.builtin.set_fact:
+            trove_guest_ssh_security_group_id: "{{ _get_trove_security_group.security_groups[0].id | default('') }}"
