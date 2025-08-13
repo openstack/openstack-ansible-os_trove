@@ -254,7 +254,7 @@ trove_guestagent_images: []
 
 # For OpenStack services that have public, admin, and internal access, use the public ones for the guest VMs.
 trove_guest_auth_url: "{{ keystone_service_publicurl }}"
-trove_guest_swift_url: "{{ trove_service_publicuri_proto }}://{{ external_lb_vip_address }}:{{ swift_proxy_port }}/v1/AUTH_"
+trove_guest_swift_url: "{{ trove_service_publicuri_proto }}://{{ external_lb_vip_address }}:{{ swift_proxy_port | default(8080) }}/v1/AUTH_"
 
 trove_resources_deploy_host: localhost
 trove_resources_deploy_python_interpreter: "{{ ansible_playbook_python }}"
@@ -311,6 +311,21 @@ trove_service_net_endpoint_type: "{{ trove_service_endpoint_type }}"
 
 # UUID of security groups that will be attached to the management net of guests
 trove_management_security_groups: []
+
+# A set of datastores which will be populated and maintained for the deployment.
+# trove_datastores:
+#   mariadb:  # name of the manager
+#     - name: MariaDB  # name of the datastore
+#       versions:
+#         - name: 11.4
+#           enabled: true
+#           version-number: 11.4.7
+#           default: true
+#         - name: 11.4
+#           enabled: false
+#           version-number: 11.4.6
+
+trove_datastores: {}
 
 # RPC encryption keys
 # See the Trove documentation as to the significance of the rpc encryption keys
