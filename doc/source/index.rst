@@ -5,7 +5,7 @@ OpenStack-Ansible Trove
 This Ansible role installs Trove.
 
 To clone or view the source code for this repository, visit the role repository
-for `os_trove <https://github.com/openstack/openstack-ansible-os_trove>`_.
+for `os_trove <https://opendev.org/openstack/openstack-ansible-os_trove>`_.
 
 .. toctree::
    :maxdepth: 2
@@ -22,11 +22,12 @@ Default variables
 Dependencies
 ~~~~~~~~~~~~
 
-This role needs pip >= 7.1 installed on the target host.
-
 To use this role, define the following variables:
 
 .. code-block:: yaml
+
+    # trove TCP listening port
+    trove_service_port: 8779
 
     # Service and user passwords
     trove_galera_password:
