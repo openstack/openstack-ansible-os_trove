@@ -51,7 +51,7 @@
     - Restart trove services
     - Restart uwsgi services
 
-- name: Implement policy.yaml if there are overrides configured
+- name: Implement policy.yaml files
   openstack.config_template.config_template:
     content: "{{ trove_policy_overrides }}"
     dest: "/etc/trove/policy.yaml"
@@ -60,16 +60,7 @@
     mode: "0644"
     config_type: yaml
   when:
-    - trove_policy_overrides | length > 0
-  tags:
-    - trove-policy-override
-
-- name: Remove legacy policy.yaml file
-  ansible.builtin.file:
-    path: "/etc/trove/policy.yaml"
-    state: absent
-  when:
-    - trove_policy_overrides | length == 0
+    - trove_services['trove-api']['group'] in group_names
   tags:
     - trove-policy-override
 
