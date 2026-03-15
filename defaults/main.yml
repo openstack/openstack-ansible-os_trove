@@ -176,15 +176,15 @@ trove_guest_oslomsg_rabbit_queue_manager: "{{ oslomsg_rabbit_queue_manager | def
 # Specific pip packages provided by the user
 trove_user_pip_packages: []
 
-# Rabbit vars
+# RabbitMQ vars
 trove_control_exchange: trove
 trove_rabbit_notification_topic: notification
 
 # The trove guest agent in the deployed DB VMs need access to OpenStack services (keystone, swift, etc)
-# and also to rabbitmq. The way it gets access (networking) these services may differ.
+# and also to RabbitMQ. The way it gets access (networking) these services may differ.
 # By default assume:
 #   OpenStack services are accesses through public interfaces
-#   Infrastructure services (rabbitmq) are accessed through the defined provider network.
+#   Infrastructure services (RabbitMQ) are accessed through the defined provider network.
 #
 # The value of 'net_name' field of the provider network network to use for infrastructure services
 trove_provider_net_name: dbaas-mgmt
@@ -192,7 +192,7 @@ trove_provider_network: >-
   {{
     provider_networks | map(attribute='network') | selectattr('net_name','defined') | selectattr(
       'net_name', 'equalto', trove_provider_net_name
-    ) | list | first
+    ) | list | first | default({})
   }}
 # The name of the network interface
 trove_provider_net_iface: "{{ (is_metal | bool) | ternary(trove_provider_network['container_bridge'], trove_provider_network['container_interface']) }}"
@@ -296,7 +296,7 @@ trove_notifications_designate: notifications_designate
 # These values are used when creating an OpenStack network to be used by Trove. By default the network will
 # not be created.
 trove_service_net_setup: false
-trove_service_net_validate_certs: "False"
+trove_service_net_validate_certs: false
 trove_service_net_phys_net: dbaas-mgmt
 trove_service_net_type: flat
 trove_service_net_name: dbaas_service_net
@@ -304,7 +304,7 @@ trove_service_net_name: dbaas_service_net
 # trove_service_net_segmentation_id:
 trove_service_subnet_name: dbaas_subnet
 trove_service_net_subnet_cidr: "172.29.252.0/22"
-trove_service_net_dhcp: "True"
+trove_service_net_dhcp: true
 trove_service_net_allocation_pool_start: "172.29.252.110"
 trove_service_net_allocation_pool_end: "172.29.255.254"
 trove_service_net_endpoint_type: "{{ trove_service_endpoint_type }}"
@@ -330,7 +330,7 @@ trove_datastores: {}
 # RPC encryption keys
 # See the Trove documentation as to the significance of the rpc encryption keys
 # Trove supplies default values but we enforce they not be left to their default values
-trove_enable_secure_rpc_messaging: "True"
+trove_enable_secure_rpc_messaging: true
 trove_required_secrets:
   - trove_galera_password
   - trove_oslomsg_rpc_password
