@@ -423,12 +423,14 @@ trove_pki_keys_path: "{{ trove_pki_dir ~ '/certs/private/' }}"
 trove_pki_certs_path: "{{ trove_pki_dir ~ '/certs/certs/' }}"
 trove_pki_intermediate_cert_name: "{{ openstack_pki_service_intermediate_cert_name | default('ExampleCorpIntermediate') }}"
 trove_pki_regen_cert: ""
-trove_pki_san: "{{ openstack_pki_san | default('DNS:' ~ ansible_facts['hostname'] ~ ',IP:' ~ management_address) }}"
+trove_pki_san: "{{ openstack_pki_san | default({'dns': [ansible_facts['hostname']], 'ip': [management_address]}) }}"
+trove_pki_backend: "{{ openstack_pki_backend | default('standalone') }}"
 trove_pki_certificates:
   - name: "trove_{{ ansible_facts['hostname'] }}"
-    provider: ownca
     cn: "{{ ansible_facts['hostname'] }}"
     san: "{{ trove_pki_san }}"
+    # standalone backend only
+    provider: ownca
     signed_by: "{{ trove_pki_intermediate_cert_name }}"
 
 # trove destination files for SSL certificates
@@ -437,17 +439,21 @@ trove_ssl_key: /etc/trove/trove.key
 
 # Installation details for SSL certificates
 trove_pki_install_certificates:
-  - src: "{{ trove_user_ssl_cert | default(trove_pki_certs_path ~ 'trove_' ~ ansible_facts['hostname'] ~ '-chain.crt') }}"
+  - name: "trove_{{ ansible_facts['hostname'] }}"
+    type: "certificate_chain"
     dest: "{{ trove_ssl_cert }}"
     owner: "{{ trove_system_user_name }}"
     group: "{{ trove_system_user_name }}"
-    mode: "0644"
-  - src: "{{ trove_user_ssl_key | default(trove_pki_keys_path ~ 'trove_' ~ ansible_facts['hostname'] ~ '.key.pem') }}"
+    # standalone backend only
+    src: "{{ trove_user_ssl_cert | default(trove_pki_certs_path ~ 'trove_' ~ ansible_facts['hostname'] ~ '-chain.crt') }}"
+  - name: "trove_{{ ansible_facts['hostname'] }}"
+    type: "private_key"
     dest: "{{ trove_ssl_key }}"
     owner: "{{ trove_system_user_name }}"
     group: "{{ trove_system_user_name }}"
-    mode: "0600"
+    # standalone backend only
+    src: "{{ trove_user_ssl_key | default(trove_pki_keys_path ~ 'trove_' ~ ansible_facts['hostname'] ~ '.key.pem') }}"
 
 # Define user-provided SSL certificates
-# trove_user_ssl_cert: <path to cert on ansible deployment host>
-# trove_user_ssl_key: <path to cert on ansible deployment host>
+trove_user_ssl_cert: ""
+trove_user_ssl_key: ""

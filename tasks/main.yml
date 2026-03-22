@@ -129,9 +129,10 @@
         - trove-config
         - pki
   vars:
+    pki_backend: "{{ trove_pki_backend }}"
     pki_setup_host: "{{ trove_pki_setup_host }}"
     pki_dir: "{{ trove_pki_dir }}"
-    pki_create_certificates: "{{ trove_user_ssl_cert is not defined and trove_user_ssl_key is not defined }}"
+    pki_create_certificates: "{{ trove_user_ssl_cert | length == 0 and trove_user_ssl_key | length == 0 }}"
     pki_regen_cert: "{{ trove_pki_regen_cert }}"
     pki_certificates: "{{ trove_pki_certificates }}"
     pki_install_certificates: "{{ trove_pki_install_certificates }}"
