@@ -254,7 +254,8 @@ trove_guestagent_images: []
 
 # For OpenStack services that have public, admin, and internal access, use the public ones for the guest VMs.
 trove_guest_auth_url: "{{ keystone_service_publicurl }}"
-trove_guest_swift_url: "{{ trove_service_publicuri_proto }}://{{ external_lb_vip_address }}:{{ swift_proxy_port | default(8080) }}/v1/AUTH_"
+trove_guest_swift_endpoint_type: public
+trove_guest_swift_url: ""
 
 trove_resources_deploy_host: localhost
 trove_resources_deploy_python_interpreter: "{{ ansible_playbook_python }}"
