@@ -199,7 +199,7 @@
 - name: Including trove_resources tasks
   ansible.builtin.include_tasks: trove_resources.yml
   when:
-    - trove_service_net_setup | bool or trove_guestagent_images | length > 0
+    - trove_service_net_setup | bool or trove_guestagent_images | length > 0 or trove_guest_ssh_key_manage | bool
     - _trove_is_first_play_host
   args:
     apply:
