@@ -53,6 +53,13 @@
         port_range_min: 22
         port_range_max: 22
         remote_ip_prefix: "{{ trove_service_net_subnet_cidr }}"
+      - protocol: icmp
+        remote_ip_prefix: "{{ trove_service_net_subnet_cidr }}"
+      - direction: egress
+        protocol: tcp
+        port_range_min: "{{ trove_guest_oslomsg_rpc_port }}"
+        port_range_max: "{{ trove_guest_oslomsg_rpc_port }}"
+        remote_ip_prefix: "{{ trove_service_net_subnet_cidr }}"
     _security_groups:
       - name: "{{ trove_guest_ssh_security_group_name }}"
         description: "security group for octavia amphora"
