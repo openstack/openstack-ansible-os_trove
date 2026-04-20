@@ -47,7 +47,7 @@
     - name: Register created security group
       run_once: true
       when:
-        - trove_guest_ssh_enabled
+        - trove_guest_ssh_enabled | bool
       block:
         - name: Get trove guestagent SSH security group ID
           openstack.cloud.security_group_info:

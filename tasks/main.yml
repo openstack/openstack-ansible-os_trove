@@ -137,7 +137,7 @@
     pki_certificates: "{{ trove_pki_certificates }}"
     pki_install_certificates: "{{ trove_pki_install_certificates }}"
   when:
-    - trove_backend_ssl
+    - trove_backend_ssl | bool
   tags:
     - always
 
@@ -199,7 +199,7 @@
 - name: Including trove_resources tasks
   ansible.builtin.include_tasks: trove_resources.yml
   when:
-    - trove_service_net_setup or trove_guestagent_images
+    - trove_service_net_setup | bool or trove_guestagent_images | length > 0
     - _trove_is_first_play_host
   args:
     apply:
