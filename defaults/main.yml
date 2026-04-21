@@ -271,6 +271,14 @@ trove_guest_ssh_key_type: rsa
 trove_guest_ssh_key_size: 4096
 # Security group which will allow SSH connections
 trove_guest_ssh_security_group_name: trove_guest_management
+# Example:
+#   trove_guest_ssh_security_group_extra_rules:
+#     - direction: ingress
+#       protocol: tcp
+#       port_range_min: 3306
+#       port_range_max: 3306
+#       remote_ip_prefix: "{{ trove_service_net_subnet_cidr }}"
+#     - direction: egress
 trove_guest_ssh_security_group_extra_rules: []
 
 trove_swift_enabled: >-
