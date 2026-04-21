@@ -194,5 +194,5 @@ to:
 
     .. code-block:: bash
 
-        openstack-ansible playbooks/lxc-containers-create.yml --limit trove_rabbitmq,lxc_hosts
-        openstack-ansible playbooks/rabbitmq-install.yml -e rabbitmq_host_group=trove_rabbitmq
+        openstack-ansible openstack.osa.containers_lxc_create --limit trove_rabbitmq,lxc_hosts
+        openstack-ansible openstack.osa.rabbitmq_server -e rabbitmq_host_group=trove_rabbitmq
