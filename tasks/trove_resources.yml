@@ -62,7 +62,7 @@
         remote_ip_prefix: "{{ trove_service_net_subnet_cidr }}"
     _security_groups:
       - name: "{{ trove_guest_ssh_security_group_name }}"
-        description: "security group for octavia amphora"
+        description: "security group for trove guest instances"
         project: "{{ trove_service_project_name }}"
         security_group_rules: "{{ _security_group_rules + trove_guest_ssh_security_group_extra_rules }}"
 
