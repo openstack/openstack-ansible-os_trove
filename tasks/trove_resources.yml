@@ -50,7 +50,7 @@
             allocation_end: "{{ trove_service_net_allocation_pool_end | default(omit) }}"
     _security_groups:
       - name: "{{ trove_guest_ssh_security_group_name }}"
-        description: "security group for octavia amphora"
+        description: "security group for trove guest instances"
         project: "{{ trove_service_project_name }}"
         security_group_rules:
           - protocol: tcp
