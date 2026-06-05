@@ -60,6 +60,10 @@
         port_range_min: "{{ trove_guest_oslomsg_rpc_port }}"
         port_range_max: "{{ trove_guest_oslomsg_rpc_port }}"
         remote_ip_prefix: "{{ trove_service_net_subnet_cidr }}"
+      - direction: egress
+        protocol: udp
+        port_range_min: 67
+        port_range_max: 67
     _security_groups:
       - name: "{{ trove_guest_ssh_security_group_name }}"
         description: "security group for trove guest instances"
