@@ -394,11 +394,11 @@ trove_services:
     execstarts: "{{ trove_bin }}/trove-api"
     init_config_overrides: "{{ trove_api_init_config_overrides }}"
     wsgi_app: "{{ trove_use_uwsgi }}"
-    wsgi_name: trove-api-wsgi
     uwsgi_overrides: "{{ trove_api_uwsgi_ini_overrides }}"
     uwsgi_bind_address: "{{ trove_service_host }}"
     uwsgi_port: "{{ trove_service_port }}"
     uwsgi_tls: "{{ trove_backend_ssl | ternary(trove_uwsgi_tls, {}) }}"
+    wsgi: "trove.cmd.app_wsgi:application"
     start_order: 1
   trove-conductor:
     group: trove_conductor
