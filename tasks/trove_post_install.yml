@@ -63,16 +63,3 @@
     - trove_services['trove-api']['group'] in group_names
   tags:
     - trove-policy-override
-
-- name: Drop trove wsgi binary
-  ansible.builtin.template:
-    src: wsgi.py.j2
-    dest: "{{ trove_bin }}/trove-api-wsgi"
-    owner: "{{ trove_system_user_name }}"
-    group: "{{ trove_system_group_name }}"
-    mode: "0755"
-  when:
-    - trove_use_uwsgi | bool
-    - inventory_hostname in groups['trove_api']
-  notify:
-    - Restart uwsgi services

@@ -74,7 +74,6 @@ uwsgi_trove_services: |-
          and ('wsgi_app' in value and value['wsgi_app']) %}
   {%     set _ = value.update(
            {
-             'wsgi_path':  trove_bin ~ '/' ~ value.wsgi_name,
              'wsgi_venv': trove_bin | dirname,
              'uwsgi_uid': trove_system_user_name,
              'uwsgi_guid': trove_system_group_name,
