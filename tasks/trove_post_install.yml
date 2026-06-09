@@ -25,7 +25,7 @@
   with_items: "{{ (groups[trove_guest_rpc_host_group] + groups[trove_guest_notify_host_group]) | unique }}"
   run_once: true
 
-- name: Drop trove api Config(s)
+- name: Copy trove config
   openstack.config_template.config_template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
