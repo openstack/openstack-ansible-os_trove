@@ -8,34 +8,35 @@ Configuring Trove
    Be sure to fully understand the security implications of the deployed
    architecture.
 
-Trove provides DBaaS to an OpenStack deployment. It deploys guest VMs
+Trove provides DBaaS to an OpenStack deployment. It deploys guest instances
 that provide the desired DB for use by the end consumer. The trove
-guest VMs need connectivity back to the trove services via RPC
-(oslo.messaging) and the OpenStack services. The way these guest VM
+guest instances need connectivity back to the trove services via RPC
+(oslo.messaging) and the OpenStack services. The way these guest instances
 get access to those services could be via internal networking (in the
 case of oslo.messaging) or via public interfaces (in the case of
 OpenStack services). For the example configuration, we'll designate a
-provider network as the network for trove to provision on each guest
-VM. The guest can then connect to oslo.messaging via this network and to the
-OpenStack services externally. Optionally, the guest VMs could use the internal
-network to access OpenStack services, but that would require more containers
-being bound to this network.
+provider network as the network for Trove to provision on each guest
+instance. The guest can then connect to oslo.messaging via this network and
+to the OpenStack services externally. Optionally, the guest instances could
+use the internal network to access OpenStack services, but that would require
+more containers being bound to this network.
 
 The deployment configuration outlined below may not be appropriate for
 production environments. Review this very carefully with your own security
 requirements.
 
-Setup a neutron network for use by trove
+Setup a Neutron network for use by Trove
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Trove needs connectivity between the control plane and the DB guest VMs. For
-this purpose a provider network should be created which bridges the trove
+Trove needs connectivity between the control plane and the DB guest instances.
+For this purpose a provider network should be created which bridges the Trove
 containers (if the control plane is installed in a container) or hosts with
-VMs. In a general case, neutron networking can be a simple flat network.
+instances. In a general case, neutron networking can be a simple flat network.
 An example entry into ``openstack_user_config.yml`` is shown below:
 
 .. code-block:: yaml
 
+     # OVS deployment
      - network:
         container_bridge: "br-dbaas"
         container_type: "veth"
@@ -45,9 +46,20 @@ An example entry into ``openstack_user_config.yml`` is shown below:
         type: "flat"
         net_name: "dbaas-mgmt"
         group_binds:
-          - neutron_linuxbridge_agent
-          - oslomsg_rpc
-          - trove_all
+          - neutron_openvswitch_agent
+          - rabbitmq
+      # OVN deployment
+      - network:
+        container_bridge: "br-dbaas"
+        container_type: "veth"
+        container_interface: "eth13"
+        host_bind_override: "eth13"
+        ip_from_q: "dbaas"
+        type: "flat"
+        net_name: "dbaas-mgmt"
+        group_binds:
+          - neutron_ovn_gateway
+          - rabbitmq
 
 Make sure to modify the other entries in this file as well.
 
@@ -57,11 +69,29 @@ lookup the addresses of the rpc messaging container. If the default is not used
 then some variables in ``defaults\main.yml`` will need to be overwritten.
 
 By default this role will not create the neutron network automaticaly. However,
-the default values can be changed to create the neutron network. See the
-``trove_service_net_*`` variable in ``defaults\main.yml``. By customizing the
-``trove_service_net_*`` variables and having this role create the neutron
-network a full deployment of the OpenStack and DBaaS can proceed
-without interruption or intervention.
+the default values can be changed to create the neutron network. If you want the
+role to configure the network during deployment, set trove_service_net_setup to
+true and adjust the other trove_service_net_* variables as needed. See the
+``trove_service_net_*`` variable in ``defaults\main.yml``:
+
+.. code-block: yaml
+
+   trove_service_net_setup: false
+   trove_service_net_validate_certs: false
+   trove_service_net_phys_net: dbaas-mgmt
+   trove_service_net_type: flat
+   trove_service_net_name: dbaas_service_net
+   # Network segmentation ID if vlan, gre...
+   trove_service_net_segmentation_id:
+   trove_service_subnet_name: dbaas_subnet
+   trove_service_net_subnet_cidr: "172.29.252.0/22"
+   trove_service_net_dhcp: true
+   trove_service_net_allocation_pool_start: "172.29.252.110"
+   trove_service_net_allocation_pool_end: "172.29.255.254"
+
+By customizing the ``trove_service_net_*`` variables and having this role
+create the neutron network a full deployment of the OpenStack and DBaaS can
+proceed without interruption or intervention.
 
 The following is an example how to set up a provider network in neutron
 manually, if so desired:
@@ -90,10 +120,10 @@ variable in ``openstack_user_config.yml``)
 Building Trove images
 ~~~~~~~~~~~~~~~~~~~~~
 
-When building disk image for the guest VM deployments there are many items
-to consider. Listed below are a few:
+When building disk image for the guest instances deployments there are many
+items to consider. Listed below are a few:
 
-#. Security of the VM and the network infrastructure
+#. Security of the instance and the network infrastructure
 #. What DBs will be installed
 #. What DB services will be supported
 #. How will the images be maintained
@@ -131,31 +161,45 @@ to:
         container_skel:
           trove_rabbit_container:
             belongs_to:
-              - trove-mq_containers
+              - trove_mq_containers
             contains:
               - trove_rabbitmq
 
         physical_skel:
-          trove-mq_containers:
+          trove_mq_containers:
             belongs_to:
               - all_containers
-          trove-mq_hosts:
+          trove_mq_hosts:
             belongs_to:
               - hosts
 
 #. Define on which hosts this group will be deployed. This can be done either
-   with a new file in conf.d or inside openstack_user_config.yml
+   with a new file in ``conf.d`` or inside ``openstack_user_config.yml``:
 
     .. code-block:: yaml
 
-        trove-mq_hosts:
+        trove_mq_hosts:
           aio1:
             ip: 172.29.236.100
 
 #. Add to the dbaas network mapping for the new group:
 
-    .. code-block:: yaml
+.. code-block:: yaml
 
+     # OVS deployment
+     - network:
+        container_bridge: "br-dbaas"
+        container_type: "veth"
+        container_interface: "eth14"
+        host_bind_override: "eth14"
+        ip_from_q: "dbaas"
+        type: "flat"
+        net_name: "dbaas-mgmt"
+        group_binds:
+          - neutron_openvswitch_agent
+          - oslomsg_rpc
+          - trove_rabbitmq
+      # OVN deployment
       - network:
         container_bridge: "br-dbaas"
         container_type: "veth"
@@ -165,20 +209,18 @@ to:
         type: "flat"
         net_name: "dbaas-mgmt"
         group_binds:
-          - neutron_linuxbridge_agent
+          - neutron_ovn_gateway
           - oslomsg_rpc
           - trove_rabbitmq
 
-#. Create overrides for dedicated rabbitmq containers, ie
+#. Create override for dedicated RabbitMQ containers, ie
    ``/etc/openstack_deploy/group_vars/trove_rabbitmq.yml``
 
     .. code-block:: yaml
 
         rabbitmq_cluster_name: trove
-        rabbitmq_cookie_token: <token>
-        rabbitmq_monitoring_password: <password>
 
-#. Create overrides for trove service contaienrs, ie
+#. Create overrides for trove service containers, ie
    ``/etc/openstack_deploy/group_vars/trove_all.yml``
 
     .. note::
@@ -190,7 +232,7 @@ to:
         trove_guest_rpc_host_group: trove_rabbitmq
         trove_guest_oslomsg_rpc_password: SecretPassword
 
-#. Run playbooks to create rabbitmq containers and deploy cluster on them
+#. Run playbooks to create RabbitMQ containers and deploy cluster on them
 
     .. code-block:: bash
 
