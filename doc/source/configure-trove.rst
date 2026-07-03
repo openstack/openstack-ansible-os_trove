@@ -145,11 +145,42 @@ pass the neutron network into the RabbitMQ container which is a security risk.
 As a result, you might want to isolate Trove from other services in terms of
 the RabbitMQ cluster and use a standalone one.
 
+Architecture overview
+---------------------
+
+The standalone cluster exposes two separate paths to the same broker:
+
+* **Control plane** (Trove API / conductor containers) -> standalone RabbitMQ
+  via the **management network** (i.e. br-mgmt).
+* **Guest agents** (database instances) -> standalone RabbitMQ via the **dbaas
+  provider network** (``trove_provider_network``).
+
+This means Trove service containers don't need dbaas interface — they reach
+the broker over management. Only the standalone RabbitMQ containers require a
+dbaas interface to have connection with guest instances.
+
+Depending on your security requirements, you may instead want the standalone
+RabbitMQ to have no management interface at all and serve both the control
+plane and the guest agents over the dbaas network only. This avoids
+the instance facing dbaas network into the sensitive management
+network through the RabbitMQ, at the cost of additional configuration (the
+Trove service containers must then reach the broker over dbaas, and the
+cluster must be deployable without a management address). Which layout is
+preferable depends on your isolation goals.
+
+.. note::
+
+   The guest **notification** transport is also routed through the standalone
+   cluster. If Ceilometer is used, its central agent must likewise be connected
+   to this network and provided with the appropriate overrides to consume
+   notification messages from the standalone cluster - the deployer is responsible
+   for configuring this.
+
 In order to deploy new RabbitMQ cluster and use it for Trove, you will need
 to:
 
 #. Create a new group for RabbitMQ containers. You will need to create a file
-   inside ``/etc/openstack_depoy/env.d`` which defines group mappings
+   inside ``/etc/openstack_depoy/env.d`` which defines group mappings:
 
     .. code-block:: yaml
 
@@ -182,36 +213,23 @@ to:
           aio1:
             ip: 172.29.236.100
 
-#. Add to the dbaas network mapping for the new group:
+#. Add to the dbaas network mapping for the new group.
+   Add a **single** ``provider_networks`` entry binding the dbaas network to
+   ``trove_rabbitmq`` only. The control plane reaches the broker over the
+   management network, so only the standalone RabbitMQ containers need a dbaas
+   interface (for guest instances to reach them).
 
-.. code-block:: yaml
+    .. code-block:: yaml
 
-     # OVS deployment
-     - network:
-        container_bridge: "br-dbaas"
-        container_type: "veth"
-        container_interface: "eth14"
-        host_bind_override: "eth14"
-        ip_from_q: "dbaas"
-        type: "flat"
-        net_name: "dbaas-mgmt"
-        group_binds:
-          - neutron_openvswitch_agent
-          - oslomsg_rpc
-          - trove_rabbitmq
-      # OVN deployment
-      - network:
-        container_bridge: "br-dbaas"
-        container_type: "veth"
-        container_interface: "eth14"
-        host_bind_override: "eth14"
-        ip_from_q: "dbaas"
-        type: "flat"
-        net_name: "dbaas-mgmt"
-        group_binds:
-          - neutron_ovn_gateway
-          - oslomsg_rpc
-          - trove_rabbitmq
+        - network:
+            container_bridge: "br-dbaas"
+            container_type: "veth"
+            container_interface: "eth14"
+            ip_from_q: "dbaas"
+            type: "raw"
+            net_name: "dbaas-mgmt"
+            group_binds:
+              - trove_rabbitmq
 
 #. Create override for dedicated RabbitMQ containers, ie
    ``/etc/openstack_deploy/group_vars/trove_rabbitmq.yml``
@@ -229,8 +247,41 @@ to:
 
     .. code-block:: yaml
 
-        trove_guest_rpc_host_group: trove_rabbitmq
-        trove_guest_oslomsg_rpc_password: SecretPassword
+       # Point the control-plane RPC vhost/user setup at the standalone cluster.
+
+       trove_oslomsg_rpc_host_group: trove_rabbitmq
+
+       # Point guest agent RPC at the standalone
+       # cluster via the dbaas provider network IPs.
+       trove_guest_rpc_host_group: trove_rabbitmq
+
+#. Add required overrides to user_variables.yml:
+
+    .. code-block:: yaml
+
+        # trove_oslomsg_rpc_servers defaults to the global
+        # oslomsg_rpc_servers (main RabbitMQ) and is not derived from
+        # trove_oslomsg_rpc_host_group.  Without this override, trove.conf
+        # transport_url points at the main cluster even though guestagent.conf
+        # correctly targets the standalone one.
+        trove_oslomsg_rpc_servers: >-
+          {{ groups['trove_rabbitmq'] | map('extract', hostvars)
+             | map(attribute='ansible_host') | join(',') }}
+
+        # Align the control-plane RabbitMQ password with the one written
+        # to guestagent.conf.
+        trove_oslomsg_rpc_password: "{{ trove_guest_oslomsg_rpc_password }}"
+
+#. Generate the standalone RabbitMQ password
+
+``trove_guest_oslomsg_rpc_password`` must exist as a concrete value in
+``user_secrets.yml`` before running any playbook.
+Add the key and generate its value:
+
+    .. code-block:: bash
+
+       echo "trove_guest_oslomsg_rpc_password:" >> /etc/openstack_deploy/user_secrets.yml
+       /opt/openstack-ansible/scripts/pw-token-gen.py --file /etc/openstack_deploy/user_secrets.yml
 
 #. Run playbooks to create RabbitMQ containers and deploy cluster on them
 
