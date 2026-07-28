@@ -1,4 +1,5 @@
-# {{ ansible_managed }}
+# {{ openstack_ansible_managed | default('OpenStack-Ansible Managed') }}
+
 [DEFAULT]
 control_exchange = {{ trove_control_exchange }}
 transport_url = {{ trove_oslomsg_rpc_transport }}://{% for host in trove_guest_oslomsg_rpc_servers.split(',') %}{{ trove_guest_oslomsg_rpc_userid }}:{{ trove_guest_oslomsg_rpc_password }}@{{ host }}:{{ trove_guest_oslomsg_rpc_port }}{% if not loop.last %},{% else %}/{{ _trove_guest_oslomsg_rpc_vhost_conf }}{% if trove_guest_oslomsg_rpc_use_ssl | bool %}?ssl=1&ssl_version={{ trove_guest_oslomsg_rpc_ssl_version }}&ssl_ca_file={{ trove_guest_oslomsg_rpc_ssl_ca_file }}{% else %}?ssl=0{% endif %}{% endif %}{% endfor %}
