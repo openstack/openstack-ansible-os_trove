@@ -109,6 +109,11 @@ user_domain_name = {{ trove_service_user_domain_name }}
 
 [database]
 connection = "{{ trove_galera_connection_string }}"
+{% if trove_galera_readonly_connection_enabled | bool %}
+slave_connection = "{{ trove_galera_readonly_connection_string }}"
+synchronous_reader = {{ trove_galera_synchronous_reader }}
+mysql_wsrep_sync_wait = {{ trove_galera_synchronous_reader | bool | ternary(0, 1) }}
+{% endif %}
 max_overflow = {{ trove_db_max_overflow }}
 max_pool_size = {{ trove_db_max_pool_size }}
 pool_timeout = {{ trove_db_pool_timeout }}
